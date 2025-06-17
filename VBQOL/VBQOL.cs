@@ -8,7 +8,7 @@ namespace VBQOL
     class VBQOL : BaseUnityPlugin
     {
         private const string ModName = "VBQOL";
-        private const string ModVersion = "0.3.1.1";
+        private const string ModVersion = "0.3.1";
         private const string ModGUID = "VitByr.VBQOL";
         private Harmony _harmony = new(ModGUID);
         internal static VBQOL self;
