@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D8653240-2378-4C73-B4AF-8F4F12B94862}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VBQOL</RootNamespace>
+    <AssemblyName>VBQOL</AssemblyName>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>preview</LangVersion>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddFuel\FireplacePatch.cs" />
+    <Compile Include="AddFuel\SmelterPatch.cs" />
+    <Compile Include="GlobalUsings.cs" />
+    <Compile Include="Network\ClutterSystemPatch.cs" />
+    <None Include="0\HumanoidPatch.cs" />
+    <None Include="0\Vb_QualitySetting.cs" />
+    <None Include="0\ZDOManPatch.cs" />
+    <None Include="0\ZRpcPatch.cs" />
+    <Compile Include="Recycle\InventoryGuiPatch.cs" />
+    <Compile Include="Recycle\RecycleUtil.cs" />
+    <Compile Include="VB_BossDespawn.cs" />
+    <Compile Include="VB_WardPatch.cs" />
+    <Compile Include="VB_AshLandsFix.cs" />
+    <Compile Include="VB_CraftingStationLevelRange.cs" />
+    <Compile Include="VB_DayCycle.cs" />
+    <Compile Include="VB_Swampkey.cs" />
+    <Compile Include="VB_SlopeDamagePatch.cs" />
+    <Compile Include="VB_ClearLogPatch.cs" />
+    <Compile Include="VB_FeedFromHandPatch.cs" />
+    <Compile Include="VB_SnakeCameraPatch.cs" />
+    <Compile Include="VB_BlastFurnaceTalesAll.cs" />
+    <Compile Include="VB_BetterLaders.cs" />
+    <Compile Include="VB_Pickable_UpdateRespawn_Patch.cs" />
+    <Compile Include="VB_ToolTierPatch.cs" />
+    <Compile Include="VB_FirePlaceUtilites.cs" />
+    <Compile Include="VB_BuildDamage.cs" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <Compile Include="VB_BetterPickupNotifications.cs" />
+    <Compile Include="VB_CustomSlotManager.cs" />
+    <Compile Include="VB_CustomSlotItem.cs" />
+    <Compile Include="VBQOL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libs\ServerSync.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ILRepack.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.4\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.4\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>Libs\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_guiutils">
+      <HintPath>Libs\assembly_guiutils_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_utils">
+      <HintPath>Libs\assembly_utils_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_valheim">
+      <HintPath>Libs\assembly_valheim_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>Libs\BepInEx.dll</HintPath>
+    </Reference>
+    <Reference Include="com.rlabrecque.steamworks.net">
+      <HintPath>Libs\com.rlabrecque.steamworks.net.dll</HintPath>
+    </Reference>
+    <Reference Include="gui_framework">
+      <HintPath>Libs\gui_framework.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib">
+      <HintPath>Libs\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="ServerSync">
+      <HintPath>Libs\ServerSync.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>Libs\System.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Libs\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>Libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>Libs\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>Libs\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>Libs\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>Libs\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Libs\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>Libs\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
+  </Target>
+</Project>
