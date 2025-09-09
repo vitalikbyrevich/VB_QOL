@@ -1,28 +1,23 @@
 ﻿namespace VBQOL
 {
-    [HarmonyPatch]
-    public class VB_BetterLaders
+    [HarmonyPatch(typeof(AutoJumpLedge), nameof(AutoJumpLedge.OnTriggerStay))]
+    public static class VB_BetterLaders
     {
-        [HarmonyPatch(typeof(AutoJumpLedge), "OnTriggerStay")]
-        public static class Ladder_Patch
+        private static bool Prefix(AutoJumpLedge __instance, Collider collider)
         {
-            private static bool Prefix(AutoJumpLedge __instance, Collider collider)
+            if (!(collider.GetComponent<Character>() is Player player) || player != Player.m_localPlayer) return true;
+
+            float ledgeAngle = __instance.gameObject.transform.rotation.eulerAngles.y;
+            float playerAngle = player.transform.rotation.eulerAngles.y;
+            float angleDiff = Mathf.Abs(Mathf.DeltaAngle(ledgeAngle, playerAngle));
+
+            if (angleDiff <= 12f)
             {
-                Character component = collider.GetComponent<Character>();
-                if (component && component == Player.m_localPlayer)
-                {
-                    Vector3 position = component.transform.position;
-                    float y = __instance.gameObject.transform.rotation.eulerAngles.y;
-                    float y2 = component.transform.rotation.eulerAngles.y;
-                    float num = Math.Abs(Mathf.DeltaAngle(y, y2));
-                    if (num <= 12f)
-                    {
-                        if (!component.m_running) component.transform.position = new Vector3(position.x, position.y + 0.06f, position.z) + component.transform.forward * 0.08f;
-                        else component.transform.position = new Vector3(position.x, position.y + 0.08f, position.z) + component.transform.forward * 0.08f;
-                    }
-                }
-                return !(component == Player.m_localPlayer);
+                Vector3 position = player.transform.position;
+                float yOffset = player.m_running ? 0.08f : 0.06f;
+                player.transform.position = new Vector3(position.x, position.y + yOffset, position.z) + player.transform.forward * 0.08f;
             }
+            return false;
         }
     }
 }

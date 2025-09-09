@@ -28,7 +28,6 @@
 		{
 			if( !humanoid || slotName == null ) return;
 
-			// Should we warn about an already occupied slot when item is not null?
 			customSlotItemData[ humanoid ][ slotName ] = item;
 		}
 
@@ -41,7 +40,6 @@
 
 		public static void ApplyCustomSlotItem( GameObject gameObject , string slotName )
 		{
-			// It's probably a really bad idea to throw here
 			if( !gameObject ) throw new ArgumentNullException( "gameObject" );
 			else if( slotName == null ) throw new ArgumentNullException( "slotName" );
 
@@ -53,9 +51,7 @@
 			}
 			else if( gameObject.GetComponent< ItemDrop >() == null ) throw new InvalidOperationException( $"GameObject \"{gameObject.name}\" does not have component ItemDrop!" );
 
-			//System.Console.WriteLine( $"Applying custom slot \"{slotName}\" to \"{gameObject.name}\"" );
 			gameObject.AddComponent< VB_CustomSlotItem >().m_slotName = slotName;
-			// This prevents equip conflicts with items of the original type
 			gameObject.GetComponent< ItemDrop >().m_itemData.m_shared.m_itemType = ItemDrop.ItemData.ItemType.None;
 		}
 	}

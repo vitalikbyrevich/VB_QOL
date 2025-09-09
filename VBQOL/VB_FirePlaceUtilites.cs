@@ -37,7 +37,6 @@
                 zdo.Set("enabledFire", true);
                 zdo.Set("fuel", zdo.GetFloat("hiddenFuelAmount") + @float);
             } 
-            //if (zdo.GetFloat("hiddenFuelAmount") != @float)
             if (!Mathf.Approximately(zdo.GetFloat("hiddenFuelAmount"), @float)) 
             {
                 float value = @float;

@@ -8,10 +8,7 @@
         {
             private static bool Prefix(Pickable __instance, ref bool repeat)
             {
-                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false)))
-                {
-                    return false;
-                }
+                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false))) return false;
                 return true;
             }
         }
@@ -33,10 +30,7 @@
         {
             private static bool Prefix(ItemDrop __instance, ref bool repeat)
             {
-                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false)))
-                {
-                    return false;
-                }
+                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false))) return false;
                 return true;
             }
         }
@@ -58,10 +52,7 @@
         {
             private static bool Prefix(Beehive __instance, ref bool repeat)
             {
-                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false)))
-                {
-                    return false;
-                }
+                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false))) return false;
                 return true;
             }
         }
@@ -83,10 +74,7 @@
         {
             private static bool Prefix(ShipControlls __instance, ref bool repeat)
             {
-                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false)))
-                {
-                    return false;
-                }
+                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false))) return false;
                 return true;
             }
         }
@@ -108,10 +96,7 @@
         {
             private static bool Prefix(Sign __instance)
             {
-                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false)))
-                {
-                    return false;
-                }
+                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false))) return false;
                 return true;
             }
         }
@@ -122,7 +107,6 @@
             {
                 if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false)))
                 {
-                   // return "\"" + __instance.GetText() + "\"";
                     return Localization.instance.Localize(__instance.GetHoverName() + "\n$piece_noaccess");
                 }
                 return "\"" + __instance.GetText() + "\"\n" + Localization.instance.Localize(__instance.m_name + "\n[<color=#FFFF00><b>$KEY_Use</b></color>] $piece_use");
@@ -134,10 +118,7 @@
         {
             private static bool Prefix(Container __instance, bool hold)
             {
-                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false)))
-                {
-                    return false;
-                }
+                if (PrivateArea.m_allAreas.Any(x => x.IsEnabled() && x.IsInside(__instance.transform.position, 0) && !PrivateArea.CheckAccess(__instance.transform.position, 0f, false))) return false;
                 return true;
             }
         }

@@ -6,184 +6,51 @@
         [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix]
         public static void Patch(ZNetScene __instance)
         {
-            // Деревья
-            __instance.GetPrefab("Beech1").GetComponent<TreeBase>().m_minToolTier = 0; // VBQOL.BeechTier.Value;
-            __instance.GetPrefab("beech_log").GetComponent<TreeLog>().m_minToolTier = 0; // VBQOL.BeechTier.Value;
-            __instance.GetPrefab("beech_log_half").GetComponent<TreeLog>().m_minToolTier = 0; // VBQOL.BeechTier.Value;
-            __instance.GetPrefab("Beech_Stub").GetComponent<Destructible>().m_minToolTier = 0; //VBQOL.BeechTier.Value;
+            Tree_Patch(__instance);
+            Roock_Patch(__instance);
+        }
 
-            __instance.GetPrefab("FirTree").GetComponent<TreeBase>().m_minToolTier = 0; //VBQOL.FirTreeTier.Value;
-            __instance.GetPrefab("FirTree_log").GetComponent<TreeLog>().m_minToolTier = 0; //VBQOL.FirTreeTier.Value;
-            __instance.GetPrefab("FirTree_log_half").GetComponent<TreeLog>().m_minToolTier =
-                0; //VBQOL.FirTreeTier.Value;
-            __instance.GetPrefab("FirTree_Stub").GetComponent<Destructible>().m_minToolTier =
-                0; //VBQOL.FirTreeTier.Value;
+        private static void Tree_Patch(ZNetScene __instance)
+        {
+            TierPatch(__instance, 0, "Beech1", "beech_log", "beech_log_half", "Beech_Stub", "FirTree", "FirTree_log", "FirTree_log_half", "FirTree_Stub");
+            TierPatch(__instance, 1, "Pinetree_01", "PineTree_log", "PineTree_log_half", "Pinetree_01_Stub");
+            TierPatch(__instance, 2, "SwampTree1", "SwampTree1_log", "SwampTree1_Stub", "Birch1", "Birch2", "Birch_log", "Birch_log_half", "BirchStub", "Birch1_aut", "Birch2_aut");
+            TierPatch(__instance, 3, "Oak1", "Oak_log", "Oak_log_half", "OakStub");
+            TierPatch(__instance, 4, "YggaShoot1", "YggaShoot2", "YggaShoot3", "yggashoot_log", "yggashoot_log_half", "ShootStump");
+        }
 
-            __instance.GetPrefab("Pinetree_01").GetComponent<TreeBase>().m_minToolTier = 1; //VBQOL.PinetreeTier.Value;
-            __instance.GetPrefab("PineTree_log").GetComponent<TreeLog>().m_minToolTier = 1; //VBQOL.PinetreeTier.Value;
-            __instance.GetPrefab("PineTree_log_half").GetComponent<TreeLog>().m_minToolTier =
-                1; //VBQOL.PinetreeTier.Value;
-            __instance.GetPrefab("Pinetree_01_Stub").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.PinetreeTier.Value;
+        private static void Roock_Patch(ZNetScene __instance)
+        {
+            TierPatch(__instance, 1,
+                "rock1_mountain", "rock1_mountain_frac", "rock2_mountain", "rock2_mountain_frac", "rock3_mountain",
+                "rock3_mountain_frac", "rock2_heath", "rock2_heath_frac", "rock4_heath", "rock4_heath_frac", "HeathRockPillar", "HeathRockPillar_frac", "RockThumb", "RockThumb_frac", "RockFinger",
+                "RockFinger_frac", "RockFingerBroken", "RockFingerBroken_frac", "Leviathan", "mudpile", "mudpile2", "mudpile_beacon", "mudpile_old", "mudpile_frac", "mudpile2_frac"
+            );
+            TierPatch(__instance, 2,
+                "caverock_ice_stalagtite", "caverock_ice_stalagtite_falling", "caverock_ice_stalagmite", "caverock_ice_stalagmite_broken", "caverock_ice_pillar_wall", "rock_mistlands1",
+                "rock_mistlands1_frac", "cliff_mistlands1", "cliff_mistlands1_frac", "cliff_mistlands2", "cliff_mistlands2_frac", "cliff_mistlands1_creep", "cliff_mistlands1_creep_frac",
+                "silvervein", "silvervein_frac", "rock3_silver", "rock3_silver_frac"
+            );
+            TierPatch(__instance, 3,
+                "MineRock_Meteorite", "giant_brain", "giant_brain_frac", "giant_ribs", "giant_ribs_frac", "giant_skull", "giant_skull_frac", "giant_helmet1", "giant_helmet1_destruction",
+                "giant_helmet2", "giant_helmet2_destruction", "giant_sword1", "giant_sword1_destruction", "giant_sword2", "giant_sword2_destruction", "ice_rock1", "ice_rock1_frac", "rock3_ice",
+                "rock3_ice_frac", "ice1"
+            );
+        }
 
-            __instance.GetPrefab("SwampTree1").GetComponent<TreeBase>().m_minToolTier = 2; //VBQOL.SwampTreeTier.Value;
-            __instance.GetPrefab("SwampTree1_log").GetComponent<TreeLog>().m_minToolTier =
-                2; //VBQOL.SwampTreeTier.Value;
-            __instance.GetPrefab("SwampTree1_Stub").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.SwampTreeTier.Value;
+        private static void TierPatch(ZNetScene scene, int tier, params string[] prefabNames)
+        {
+            foreach (var name in prefabNames)
+            {
+                var prefab = scene.GetPrefab(name);
+                if (!prefab) continue;
 
-            __instance.GetPrefab("Birch1").GetComponent<TreeBase>().m_minToolTier = 2; //VBQOL.BirchTier.Value;
-            __instance.GetPrefab("Birch2").GetComponent<TreeBase>().m_minToolTier = 2; //VBQOL.BirchTier.Value;
-            __instance.GetPrefab("Birch_log").GetComponent<TreeLog>().m_minToolTier = 2; //VBQOL.BirchTier.Value;
-            __instance.GetPrefab("Birch_log_half").GetComponent<TreeLog>().m_minToolTier = 2; //VBQOL.BirchTier.Value;
-            __instance.GetPrefab("BirchStub").GetComponent<Destructible>().m_minToolTier = 2; //VBQOL.BirchTier.Value;
-
-            __instance.GetPrefab("Birch1_aut").GetComponent<TreeBase>().m_minToolTier = 2; //VBQOL.BirchPlainTier.Value;
-            __instance.GetPrefab("Birch2_aut").GetComponent<TreeBase>().m_minToolTier = 2; //VBQOL.BirchPlainTier.Value;
-
-            __instance.GetPrefab("caverock_ice_stalagtite").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.IceStalagtiteTier.Value;
-            __instance.GetPrefab("caverock_ice_stalagtite_falling").GetComponent<TreeLog>().m_minToolTier =
-                2; //VBQOL.IceStalagtiteTier.Value;
-            __instance.GetPrefab("caverock_ice_stalagmite").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.IceStalagtiteTier.Value;
-            __instance.GetPrefab("caverock_ice_stalagmite_broken").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.IceStalagtiteTier.Value;
-            __instance.GetPrefab("caverock_ice_pillar_wall").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.IceStalagtiteTier.Value;
-
-            __instance.GetPrefab("Oak1").GetComponent<TreeBase>().m_minToolTier = 3; //VBQOL.OakTier.Value;
-            __instance.GetPrefab("Oak_log").GetComponent<TreeLog>().m_minToolTier = 3; //VBQOL.OakTier.Value;
-            __instance.GetPrefab("Oak_log_half").GetComponent<TreeLog>().m_minToolTier = 3; //VBQOL.OakTier.Value;
-            __instance.GetPrefab("OakStub").GetComponent<Destructible>().m_minToolTier = 3; //VBQOL.OakTier.Value;
-
-            __instance.GetPrefab("YggaShoot1").GetComponent<TreeBase>().m_minToolTier = 4; //VBQOL.YggaShootTier.Value;
-            __instance.GetPrefab("YggaShoot2").GetComponent<TreeBase>().m_minToolTier = 4; //VBQOL.YggaShootTier.Value;
-            __instance.GetPrefab("YggaShoot3").GetComponent<TreeBase>().m_minToolTier = 4; //VBQOL.YggaShootTier.Value;
-            __instance.GetPrefab("yggashoot_log").GetComponent<TreeLog>().m_minToolTier =
-                4; //VBQOL.YggaShootTier.Value;
-            __instance.GetPrefab("yggashoot_log_half").GetComponent<TreeLog>().m_minToolTier =
-                4; //VBQOL.YggaShootTier.Value;
-            __instance.GetPrefab("ShootStump").GetComponent<Destructible>().m_minToolTier =
-                4; //VBQOL.YggaShootTier.Value;
-
-            // Камни и руды
-            __instance.GetPrefab("Leviathan").GetComponent<MineRock>().m_minToolTier = 1; //VBQOL.LeviathanTier.Value;
-
-            __instance.GetPrefab("mudpile").GetComponent<Destructible>().m_minToolTier = 1; //VBQOL.MudpileTier.Value;
-            __instance.GetPrefab("mudpile2").GetComponent<Destructible>().m_minToolTier = 1; //VBQOL.MudpileTier.Value;
-            __instance.GetPrefab("mudpile_beacon").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.MudpileTier.Value;
-            __instance.GetPrefab("mudpile_old").GetComponent<MineRock>().m_minToolTier = 1; //VBQOL.MudpileTier.Value;
-            __instance.GetPrefab("mudpile_frac").GetComponent<MineRock5>().m_minToolTier = 1; //VBQOL.MudpileTier.Value;
-            __instance.GetPrefab("mudpile2_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.MudpileTier.Value;
-
-            __instance.GetPrefab("MineRock_Meteorite").GetComponent<MineRock>().m_minToolTier =
-                3; //VBQOL.MeteoriteTier.Value;
-
-            __instance.GetPrefab("Rock_3").GetComponent<Destructible>().m_minToolTier = 0; //VBQOL.RockTier.Value;
-            __instance.GetPrefab("Rock_3_frac").GetComponent<MineRock5>().m_minToolTier = 0; //VBQOL.RockTier.Value;
-            __instance.GetPrefab("rock4_coast").GetComponent<Destructible>().m_minToolTier = 0; //VBQOL.RockTier.Value;
-            __instance.GetPrefab("rock4_coast_frac").GetComponent<MineRock5>().m_minToolTier =
-                0; //VBQOL.RockTier.Value;
-            __instance.GetPrefab("rock4_forest").GetComponent<Destructible>().m_minToolTier = 0; //VBQOL.RockTier.Value;
-            __instance.GetPrefab("rock4_forest_frac").GetComponent<MineRock5>().m_minToolTier =
-                0; //VBQOL.RockTier.Value;
-
-            __instance.GetPrefab("rock4_copper").GetComponent<Destructible>().m_minToolTier =
-                0; //VBQOL.CopperTier.Value;
-            __instance.GetPrefab("rock4_copper_frac").GetComponent<MineRock5>().m_minToolTier =
-                0; //VBQOL.CopperTier.Value;
-
-            __instance.GetPrefab("rock1_mountain").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.RockMountainTier.Value;
-            __instance.GetPrefab("rock1_mountain_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.RockMountainTier.Value;
-            __instance.GetPrefab("rock2_mountain").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.RockMountainTier.Value;
-            __instance.GetPrefab("rock2_mountain_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.RockMountainTier.Value;
-            __instance.GetPrefab("rock3_mountain").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.RockMountainTier.Value;
-            __instance.GetPrefab("rock3_mountain_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.RockMountainTier.Value;
-
-            __instance.GetPrefab("rock2_heath").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("rock2_heath_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("rock4_heath").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("rock4_heath_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("HeathRockPillar").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("HeathRockPillar_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("RockThumb").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("RockThumb_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("RockFinger").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("RockFinger_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("RockFingerBroken").GetComponent<Destructible>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-            __instance.GetPrefab("RockFingerBroken_frac").GetComponent<MineRock5>().m_minToolTier =
-                1; //VBQOL.RockPlainTier.Value;
-
-            __instance.GetPrefab("rock_mistlands1").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.RockMistlandTier.Value;
-            __instance.GetPrefab("rock_mistlands1_frac").GetComponent<MineRock5>().m_minToolTier =
-                2; //VBQOL.RockMistlandTier.Value;
-            __instance.GetPrefab("cliff_mistlands1").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.RockMistlandTier.Value;
-            __instance.GetPrefab("cliff_mistlands1_frac").GetComponent<MineRock5>().m_minToolTier =
-                2; //VBQOL.RockMistlandTier.Value;
-            __instance.GetPrefab("cliff_mistlands2").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.RockMistlandTier.Value;
-            __instance.GetPrefab("cliff_mistlands2_frac").GetComponent<MineRock5>().m_minToolTier =
-                2; //VBQOL.RockMistlandTier.Value;
-            __instance.GetPrefab("cliff_mistlands1_creep").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.RockMistlandTier.Value;
-            __instance.GetPrefab("cliff_mistlands1_creep_frac").GetComponent<MineRock5>().m_minToolTier =
-                2; //VBQOL.RockMistlandTier.Value;
-
-            __instance.GetPrefab("silvervein").GetComponent<Destructible>().m_minToolTier = 2; //VBQOL.SilverTier.Value;
-            __instance.GetPrefab("silvervein_frac").GetComponent<MineRock5>().m_minToolTier =
-                2; //VBQOL.SilverTier.Value;
-            __instance.GetPrefab("rock3_silver").GetComponent<Destructible>().m_minToolTier =
-                2; //VBQOL.SilverTier.Value;
-            __instance.GetPrefab("rock3_silver_frac").GetComponent<MineRock5>().m_minToolTier =
-                2; //VBQOL.SilverTier.Value;
-
-            __instance.GetPrefab("giant_brain").GetComponent<Destructible>().m_minToolTier = 3; //VBQOL.BrainTier.Value;
-            __instance.GetPrefab("giant_brain_frac").GetComponent<MineRock5>().m_minToolTier =
-                3; //VBQOL.BrainTier.Value;
-            __instance.GetPrefab("giant_ribs").GetComponent<Destructible>().m_minToolTier = 3; //VBQOL.GiantTier.Value;
-            __instance.GetPrefab("giant_ribs_frac").GetComponent<MineRock5>().m_minToolTier =
-                3; //VBQOL.GiantTier.Value;
-            __instance.GetPrefab("giant_skull").GetComponent<Destructible>().m_minToolTier = 3; //VBQOL.GiantTier.Value;
-            __instance.GetPrefab("giant_skull_frac").GetComponent<MineRock5>().m_minToolTier =
-                3; //VBQOL.GiantTier.Value;
-            __instance.GetPrefab("giant_helmet1").GetComponent<Destructible>().m_minToolTier =
-                3; //VBQOL.GiantArmorTier.Value;
-            __instance.GetPrefab("giant_helmet1_destruction").GetComponent<MineRock5>().m_minToolTier =
-                3; //VBQOL.GiantArmorTier.Value;
-            __instance.GetPrefab("giant_helmet2").GetComponent<Destructible>().m_minToolTier = 3;
-            __instance.GetPrefab("giant_helmet2_destruction").GetComponent<MineRock5>().m_minToolTier = 3;
-            __instance.GetPrefab("giant_sword1").GetComponent<Destructible>().m_minToolTier = 3;
-            __instance.GetPrefab("giant_sword1_destruction").GetComponent<MineRock5>().m_minToolTier = 3;
-            __instance.GetPrefab("giant_sword2").GetComponent<Destructible>().m_minToolTier = 3;
-            __instance.GetPrefab("giant_sword2_destruction").GetComponent<MineRock5>().m_minToolTier = 3;
-
-            __instance.GetPrefab("ice_rock1").GetComponent<Destructible>().m_minToolTier = 3;
-            __instance.GetPrefab("ice_rock1_frac").GetComponent<MineRock5>().m_minToolTier = 3;
-            __instance.GetPrefab("rock3_ice").GetComponent<Destructible>().m_minToolTier = 3;
-            __instance.GetPrefab("rock3_ice_frac").GetComponent<MineRock5>().m_minToolTier = 3;
-            __instance.GetPrefab("ice1").GetComponent<Destructible>().m_minToolTier = 3;
+                if (prefab.GetComponent<Destructible>() is { } destructible) destructible.m_minToolTier = tier;
+                if (prefab.GetComponent<TreeBase>() is { } treeBase) treeBase.m_minToolTier = tier;
+                if (prefab.GetComponent<TreeLog>() is { } treeLog) treeLog.m_minToolTier = tier;
+                if (prefab.GetComponent<MineRock>() is { } mineRock) mineRock.m_minToolTier = tier;
+                if (prefab.GetComponent<MineRock5>() is { } mineRock5) mineRock5.m_minToolTier = tier;
+            }
         }
     }
 }
