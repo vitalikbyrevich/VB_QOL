@@ -1,4 +1,6 @@
-﻿namespace VBQOL
+﻿using Debug = UnityEngine.Debug;
+
+namespace VBQOL
 {
 	[HarmonyPatch]
 	public class VB_CraftingStationLevelRange
@@ -50,7 +52,7 @@
 				component.m_rangeBuild = newRange;
 				component.m_areaMarker.GetComponent<CircleProjector>().m_radius = newRange;
 				component.m_areaMarker.GetComponent<CircleProjector>().m_nrOfSegments = (int)Math.Ceiling(Math.Max(5f, 4f * newRange));
-				VBQOL.Logger.LogInfo($"{station.m_name} ({station.GetInstanceID()}) новый радиус {newRange} ");
+				Debug.LogWarning($"{station.m_name} ({station.GetInstanceID()}) новый радиус {newRange} ");
 			}
 		}
 

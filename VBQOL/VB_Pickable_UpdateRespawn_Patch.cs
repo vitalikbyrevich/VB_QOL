@@ -1,4 +1,6 @@
-﻿namespace VBQOL
+﻿using Debug = UnityEngine.Debug;
+
+namespace VBQOL
 {
 	[HarmonyPatch]
     public class VB_Pickable_UpdateRespawn_Patch
@@ -10,10 +12,10 @@
 			{
 				if (__instance && __exception != null)
 				{
-					VBQOL.Logger.LogDebug(__exception);
+					Debug.LogWarning(__exception);
 					var timeNow = ZNet.instance.GetTime();
 					__instance.m_nview.GetZDO().Set(ZDOVars.s_pickedTime, timeNow.Ticks);
-					VBQOL.Logger.LogDebug("Исправлен таймер расстения:");
+					Debug.LogWarning("Исправлен таймер расстения:");
 				}
 				return null;
 			}
