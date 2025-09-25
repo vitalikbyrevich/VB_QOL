@@ -6,7 +6,7 @@ namespace VBQOL
     class VBQOL : BaseUnityPlugin
     {
         private const string ModName = "VBQOL";
-        private const string ModVersion = "0.3.2";
+        private const string ModVersion = "0.3.3";
         private const string ModGUID = "VitByr.VBQOL";
      //   private Harmony _harmony = new(ModGUID);
         internal static VBQOL self;
@@ -70,8 +70,10 @@ namespace VBQOL
             paradoxbuild = CheckIfModIsLoaded("VitByr.ParadoxBuild");
             seasons = CheckIfModIsLoaded("shudnal.Seasons");
             ConfigurationManagerAttributes isAdminOnly = new ConfigurationManagerAttributes { IsAdminOnly = true };
-
-          
+            
+            VB_BossDespawn.radiusConfig = Config.Bind("01 - BossDespawn", "Despawn radius", 150f, "Радиус обнаружения игроков"); 
+            VB_BossDespawn.despawnDelayConfig = Config.Bind("01 - BossDespawn", "Despawn delay", 5f, "Через сколько минут босс деспавнится");
+            
             AFEnable = Config.Bind("02 - AddAllFuel", "AF_Enable", true, "Вкл/Выкл секцию");
             AFModifierKeyConfig = Config.Bind("02 - AddAllFuel", "AF_ModifierKey", KeyCode.LeftShift, new ConfigDescription("Клавиша для добавления сразу стака в печь/ плавильню."));
             AFTextConfig = Config.Bind("02 - AddAllFuel", "AF_Extinguish_Text", "Добавить стак", new ConfigDescription("Текст отображаемый при наведении печь/костер", null, isAdminOnly));
@@ -136,13 +138,9 @@ namespace VBQOL
             SetGraphicsSettings();
             #endregion
             
-            VB_CustomSlotItem.ItemSlotPairs = Config.Bind("08 - CustomSlot", "ItemSlotPairs",
+            VB_CustomSlotItem.ItemSlotPairs = Config.Bind("09 - CustomSlot", "ItemSlotPairs",
                 "Demister,wisplight;Wishbone,wishbone;par_item_ring_25,par_item_ring;par_item_ring_50,par_item_ring;par_item_ring_75,par_item_ring;par_item_ring_100,par_item_ring",
                 "\"ItemName1,SlotName;...;ItemNameN,SlotName\"\nНесколько предметов могут быть помещены в один и тот же слот (не все сразу), но один и тот же предмет не может быть помещен в несколько слотов.\nЧтобы изменения вступили в силу, игру необходимо перезапустить." );
-           
-
-            VB_BossDespawn.radiusConfig = Config.Bind("09 - BossDespawn", "Despawn radius", 100f, "Радиус обнаружения игроков"); 
-            VB_BossDespawn.despawnDelayConfig = Config.Bind("09 - BossDespawn", "Despawn delay", 1f, "Через сколько минут босс деспавнится");
             
            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), ModGUID);
         }

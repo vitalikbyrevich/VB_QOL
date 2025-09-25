@@ -46,6 +46,7 @@
     <Compile Include="Network\ClutterSystemPatch.cs" />
     <None Include="0\HumanoidPatch.cs" />
     <None Include="0\Vb_QualitySetting.cs" />
+    <None Include="0\VB_SlopeDamagePatch.cs" />
     <None Include="0\ZDOManPatch.cs" />
     <None Include="0\ZRpcPatch.cs" />
     <Compile Include="Recycle\InventoryGuiPatch.cs" />
@@ -59,7 +60,6 @@
     <Compile Include="VB_CraftingStationLevelRange.cs" />
     <Compile Include="VB_DayCycle.cs" />
     <Compile Include="VB_Swampkey.cs" />
-    <None Include="VB_SlopeDamagePatch.cs" />
     <Compile Include="VB_ClearLogPatch.cs" />
     <Compile Include="VB_FeedFromHandPatch.cs" />
     <Compile Include="VB_SnakeCameraPatch.cs" />
