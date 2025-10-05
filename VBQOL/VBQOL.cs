@@ -71,20 +71,20 @@ namespace VBQOL
             seasons = CheckIfModIsLoaded("shudnal.Seasons");
             ConfigurationManagerAttributes isAdminOnly = new ConfigurationManagerAttributes { IsAdminOnly = true };
             
-            VB_BossDespawn.radiusConfig = Config.Bind("01 - BossDespawn", "Despawn radius", 150f, "Радиус обнаружения игроков"); 
-            VB_BossDespawn.despawnDelayConfig = Config.Bind("01 - BossDespawn", "Despawn delay", 5f, "Через сколько минут босс деспавнится");
+            VB_BossDespawn.radiusConfig = Config.Bind("01 - BossDespawn", "Despawn radius", 150f, new ConfigDescription("Радиус обнаружения игроков", null, isAdminOnly)); 
+            VB_BossDespawn.despawnDelayConfig = Config.Bind("01 - BossDespawn", "Despawn delay", 5f, new ConfigDescription("Через сколько минут босс деспавнится", null, isAdminOnly));
             
             AFEnable = Config.Bind("02 - AddAllFuel", "AF_Enable", true, "Вкл/Выкл секцию");
             AFModifierKeyConfig = Config.Bind("02 - AddAllFuel", "AF_ModifierKey", KeyCode.LeftShift, new ConfigDescription("Клавиша для добавления сразу стака в печь/ плавильню."));
-            AFTextConfig = Config.Bind("02 - AddAllFuel", "AF_Extinguish_Text", "Добавить стак", new ConfigDescription("Текст отображаемый при наведении печь/костер", null, isAdminOnly));
+            AFTextConfig = Config.Bind("02 - AddAllFuel", "AF_Extinguish_Text", "Добавить стак", new ConfigDescription("Текст отображаемый при наведении печь/костер"));
 
             #region BuildDamage
 
-            VB_BuildDamage.enableModBDConfig = Config.Bind("03 - BuildDamage", "BD_Enable_Section", true, "Включите или отключите этот раздел"); 
-            VB_BuildDamage.creatorDamageMultConfig = Config.Bind("03 - BuildDamage", "BD_CreatorDamageMult", 0.75f, "Множитель урона от создателя постройки");
-            VB_BuildDamage.nonCreatorDamageMultConfig = Config.Bind("03 - BuildDamage", "BD_NonCreatorDamageMult", 0.05f, "Множитель урона от не создателя постройки");
-            VB_BuildDamage.uncreatedDamageMultConfig = Config.Bind("03 - BuildDamage", "BD_UncreatedDamageMult", 0.75f, "Множитель урона постройкам не созданным игроком");
-            VB_BuildDamage.naturalDamageMultConfig = Config.Bind("03 - BuildDamage", "BD_NaturalDamageMult", 0.75f, "Множитель урона от погоды и монстров.");
+            VB_BuildDamage.enableModBDConfig = Config.Bind("03 - BuildDamage", "BD_Enable_Section", true, new ConfigDescription("Включите или отключите этот раздел", null, isAdminOnly)); 
+            VB_BuildDamage.creatorDamageMultConfig = Config.Bind("03 - BuildDamage", "BD_CreatorDamageMult", 0.75f, new ConfigDescription("Множитель урона от создателя постройки", null, isAdminOnly));
+            VB_BuildDamage.nonCreatorDamageMultConfig = Config.Bind("03 - BuildDamage", "BD_NonCreatorDamageMult", 0.05f, new ConfigDescription("Множитель урона от не создателя постройки", null, isAdminOnly));
+            VB_BuildDamage.uncreatedDamageMultConfig = Config.Bind("03 - BuildDamage", "BD_UncreatedDamageMult", 0.75f, new ConfigDescription("Множитель урона постройкам не созданным игроком", null, isAdminOnly));
+            VB_BuildDamage.naturalDamageMultConfig = Config.Bind("03 - BuildDamage", "BD_NaturalDamageMult", 0.75f, new ConfigDescription("Множитель урона от погоды и монстров.", null, isAdminOnly));
 
             #endregion
 
@@ -102,7 +102,7 @@ namespace VBQOL
             
             VB_EquipInWater.EiW_Custom = Config.Bind("05 - EquipInWater", "EiW_Custom",
                 "KnifeFlint,KnifeCopper,KnifeChitin,KnifeSilver,KnifeBlackMetal,KnifeButcher,KnifeSkollAndHati,SpearFlint,SpearBronze,SpearElderbark,SpearWolfFang,SpearChitin,SpearCarapace,PickaxeAntler,PickaxeBronze,PickaxeIron,PickaxeBlackMetal,Hammer,Hoe,FistFenrirClaw",
-                "Разрешить использовать оружие/инструмент в воде");
+                new ConfigDescription("Разрешить использовать оружие/инструмент в воде", null, isAdminOnly));
             VB_EquipInWater.EiW_Custom.SettingChanged += (_, _) =>  VB_EquipInWater.EiW_CustomStrings = [..  VB_EquipInWater.EiW_Custom.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)];
             VB_EquipInWater.EiW_CustomStrings = [..  VB_EquipInWater.EiW_Custom.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)];
             
