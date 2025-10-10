@@ -5,17 +5,14 @@
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(InventoryGui.Update))]
-        private static void PostfixUpdate(InventoryGui __instance) 
-        {
-            VBQOL.self?.RebuildRecycleTab();
-        }
+        private static void PostfixUpdate(InventoryGui __instance) => RecycleUtil.RebuildRecycleTab();
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(InventoryGui.OnTabCraftPressed))]
         [HarmonyPatch(nameof(InventoryGui.OnTabUpgradePressed))]
         private static bool Prefix_EnableRecycleButton(InventoryGui __instance)
         {
-            VBQOL.self.recycleButton.interactable = true;
+            RecycleUtil.recycleButton.interactable = true;
             return true;
         }
 
@@ -23,7 +20,7 @@
         [HarmonyPatch(nameof(InventoryGui.SetupRequirement))]
         private static void PostfixSetupRequirement(Transform elementRoot, Piece.Requirement req, int quality)
         {
-            if (!VBQOL.self.InTabDeconstruct()) return;
+            if (!RecycleUtil.InTabDeconstruct()) return;
 
             var amountText = elementRoot.Find("res_amount").GetComponent<TMP_Text>();
             amountText.text = RecycleUtil.GetModifiedAmount(quality, req).ToString();
@@ -48,8 +45,8 @@
 
             if (currentCraftingStation && isSpecialStation)
             {
-                VBQOL.self.recycleObject.SetActive(false);
-                VBQOL.self.recycleButton.interactable = true;
+                RecycleUtil.recycleObject.SetActive(false);
+                RecycleUtil.recycleButton.interactable = true;
                 return true;
             }
 
@@ -58,13 +55,13 @@
                 __instance.m_tabCraft.interactable = false;
                 __instance.m_tabUpgrade.interactable = true;
                 __instance.m_tabUpgrade.gameObject.SetActive(false);
-                VBQOL.self.recycleObject.SetActive(false);
-                VBQOL.self.recycleButton.interactable = true;
+                RecycleUtil.recycleObject.SetActive(false);
+                RecycleUtil.recycleButton.interactable = true;
                 return true;
             }
 
             __instance.m_tabUpgrade.gameObject.SetActive(true);
-            VBQOL.self.recycleObject.SetActive(true);
+            RecycleUtil.recycleObject.SetActive(true);
 
             List<Recipe> available = new List<Recipe>();
             localPlayer.GetAvailableRecipes(ref available);
@@ -91,7 +88,7 @@
         [HarmonyPatch(nameof(InventoryGui.UpdateRecipeList))]
         private static void PostfixUpdateRecipeList(InventoryGui __instance, List<Recipe> recipes)
         {
-            if (!VBQOL.self.InTabDeconstruct()) return;
+            if (!RecycleUtil.InTabDeconstruct()) return;
 
             Player localPlayer = Player.m_localPlayer;
             Inventory inventory = localPlayer.GetInventory();
@@ -141,7 +138,7 @@
         [HarmonyPatch(nameof(InventoryGui.UpdateRecipe))]
         private static bool PrefixUpdateRecipe(InventoryGui __instance, Player player, float dt)
         {
-            if (!VBQOL.self.InTabDeconstruct()) return true;
+            if (!RecycleUtil.InTabDeconstruct()) return true;
 
             CraftingStation currentCraftingStation = player.GetCurrentCraftingStation();
             if (currentCraftingStation)
@@ -242,7 +239,7 @@
 
             if (__instance.m_craftTimer >= __instance.m_craftDuration)
             {
-                if (VBQOL.self.InTabDeconstruct()) RecycleUtil.DoRecycle(player, __instance);
+                if (RecycleUtil.InTabDeconstruct()) RecycleUtil.DoRecycle(player, __instance);
                 else __instance.DoCrafting(player);
                 __instance.m_craftTimer = -1f;
             }

@@ -1,3 +1,6 @@
+using VBQOL.AddFuel;
+using VBQOL.Recycle;
+
 namespace VBQOL
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
@@ -6,7 +9,7 @@ namespace VBQOL
     class VBQOL : BaseUnityPlugin
     {
         private const string ModName = "VBQOL";
-        private const string ModVersion = "0.3.4";
+        private const string ModVersion = "0.3.5";
         private const string ModGUID = "VitByr.VBQOL";
      //   private Harmony _harmony = new(ModGUID);
         internal static VBQOL self;
@@ -22,43 +25,7 @@ namespace VBQOL
         internal static ConfigEntry<AnisotropicFiltering> anisotropic_filtering;
 
         #region Add fuel
-        public static ConfigEntry<KeyCode> AFModifierKeyConfig;
-        public static KeyCode AFModifierKeyUseConfig=KeyCode.E;
-        public static ConfigEntry<string> AFTextConfig;
-        public static ConfigEntry<bool> AFEnable;
-        
-        public static ItemDrop.ItemData FindCookableItem(Smelter __instance, Inventory inventory, bool isAddOne)
-        {
-            IEnumerable<string> names;
-            names = __instance.m_conversion.Select(n => n.m_from.m_itemData.m_shared.m_name);
-
-            foreach (string name in names)
-            {
-                ItemDrop.ItemData item = inventory?.GetItem(name);
-                if (item != null) return item;
-            }
-            return null;
-        }
-        #endregion
-        
-        #region Recycle
-
-        internal GameObject recycleObject;
-        internal Button recycleButton;
-
-        internal ConfigEntry<TabPositions> tabPosition;
-        public enum TabPositions
-        {
-            Left,
-            Middle,
-            Right,
-        }
-        internal ConfigEntry<float> resourceMultiplier;
-        internal ConfigEntry<bool> preserveOriginalItem;
-        internal ConfigEntry<string> recyclebuttontext;
-
-        internal bool InTabDeconstruct() => !recycleButton.interactable;
-
+       
         #endregion
         
         internal static bool paradoxbuild;
@@ -74,9 +41,9 @@ namespace VBQOL
             VB_BossDespawn.radiusConfig = Config.Bind("01 - BossDespawn", "Despawn radius", 150f, new ConfigDescription("Радиус обнаружения игроков", null, isAdminOnly)); 
             VB_BossDespawn.despawnDelayConfig = Config.Bind("01 - BossDespawn", "Despawn delay", 5f, new ConfigDescription("Через сколько минут босс деспавнится", null, isAdminOnly));
             
-            AFEnable = Config.Bind("02 - AddAllFuel", "AF_Enable", true, "Вкл/Выкл секцию");
-            AFModifierKeyConfig = Config.Bind("02 - AddAllFuel", "AF_ModifierKey", KeyCode.LeftShift, new ConfigDescription("Клавиша для добавления сразу стака в печь/ плавильню."));
-            AFTextConfig = Config.Bind("02 - AddAllFuel", "AF_Extinguish_Text", "Добавить стак", new ConfigDescription("Текст отображаемый при наведении печь/костер"));
+            AddFuelUtil.AFEnable = Config.Bind("02 - AddAllFuel", "AF_Enable", true, "Вкл/Выкл секцию"); 
+            AddFuelUtil.AFModifierKeyConfig = Config.Bind("02 - AddAllFuel", "AF_ModifierKey", KeyCode.LeftShift, new ConfigDescription("Клавиша для добавления сразу стака в печь/ плавильню.")); 
+            AddFuelUtil.AFTextConfig = Config.Bind("02 - AddAllFuel", "AF_Extinguish_Text", "Добавить стак", new ConfigDescription("Текст отображаемый при наведении печь/костер"));
 
             #region BuildDamage
 
@@ -118,10 +85,10 @@ namespace VBQOL
 
             #region Recycle
 
-            tabPosition = Config.Bind("07 - Recycle", "R_TabPosition", TabPositions.Left, "Положение вкладки Разобрать в меню крафта. (Требуется перезапуск)");
-            resourceMultiplier = Config.Bind("07 - Recycle", "R_ResourceMultiplier", 0.35f, "Количество ресурсов, возвращаемых в результате разбора (от 0 до 1, где 1 возвращает 100% ресурсов, а 0 - 0%)");
-            preserveOriginalItem = Config.Bind("07 - Recycle", "R_PreserveOriginalItem", true, "Сохранять ли данные оригинального предмета при понижении уровня. Полезно для модов, добавляющих дополнительные свойства к предметам, например EpicLoot.\nОтключите, если возникли проблемы.");
-            recyclebuttontext = Config.Bind("07 - Recycle", "R_RecycleButtonText", "Разобрать", "Текст кнопки в меню крафта");
+            RecycleUtil.tabPosition = Config.Bind("07 - Recycle", "R_TabPosition", RecycleUtil.TabPositions.Left, "Положение вкладки Разобрать в меню крафта. (Требуется перезапуск)");
+            RecycleUtil.resourceMultiplier = Config.Bind("07 - Recycle", "R_ResourceMultiplier", 0.35f, "Количество ресурсов, возвращаемых в результате разбора (от 0 до 1, где 1 возвращает 100% ресурсов, а 0 - 0%)");
+            RecycleUtil.preserveOriginalItem = Config.Bind("07 - Recycle", "R_PreserveOriginalItem", true, "Сохранять ли данные оригинального предмета при понижении уровня. Полезно для модов, добавляющих дополнительные свойства к предметам, например EpicLoot.\nОтключите, если возникли проблемы.");
+            RecycleUtil.recyclebuttontext = Config.Bind("07 - Recycle", "R_RecycleButtonText", "Разобрать", "Текст кнопки в меню крафта");
 
             #endregion
 
@@ -146,50 +113,12 @@ namespace VBQOL
             
            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), ModGUID);
         }
-
-        #region Recycle
-
-        public void RebuildRecycleTab() 
-        {
-            if (self.recycleObject) return;
-
-            Logger.LogInfo("Создана кнопка 'Разобрать'");
-
-            recycleObject = Instantiate(InventoryGui.instance.m_tabUpgrade.gameObject, InventoryGui.instance.m_tabUpgrade.transform.parent);
-            if (!recycleObject)
-            {
-                Logger.LogError("Не удалось создать кнопку 'Разобрать'.");
-                return;
-            }
-
-            recycleObject.name = "Recycle";
-            recycleObject.GetComponentInChildren<TMP_Text>().text = "Разбор";
-            
-            recycleButton = recycleObject.GetComponent<Button>();
-            recycleButton.transform.localPosition = new Vector3(
-                recycleObject.transform.localPosition.x + ((recycleObject.GetComponent<RectTransform>().rect.width + 10f) * ((int)tabPosition.Value + 1)),
-                recycleObject.transform.localPosition.y, recycleObject.transform.localPosition.z
-                );
-            recycleButton.name = "RecycleButton";
-            recycleButton.onClick.RemoveAllListeners();
-            recycleButton.onClick.AddListener(() => 
-            {
-                Logger.LogDebug("Selected recycle");
-                recycleButton.interactable = false;
-                InventoryGui.m_instance.m_tabCraft.interactable = true;
-                InventoryGui.m_instance.m_tabUpgrade.interactable = true;
-                InventoryGui.m_instance.UpdateCraftingPanel();
-            });
-    
-            recycleObject.SetActive(false);
-        }
-        #endregion
         
         private void OnDestroy()
         {
             Config.Save();
             Logger.LogInfo("DESTROY");
-            Destroy(recycleObject);
+            Destroy(RecycleUtil.recycleObject);
         }
         
 

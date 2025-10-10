@@ -9,39 +9,39 @@
         public static ConfigEntry<string> igniteStringConfig;
         public static ConfigEntry<KeyCode> keyPOCodeStringConfig;
         
-        
         public static Fireplace GetAndCheckFireplace(Player player, bool checkIfBurning)
         {
             GameObject hoverObject = player.GetHoverObject();
-            Fireplace fireplace = (hoverObject) ? hoverObject.GetComponentInParent<Fireplace>() : null;
+            if (!hoverObject) return null;
+
+            Fireplace fireplace = hoverObject.GetComponentInParent<Fireplace>();
             if (!fireplace) return null;
-            Fireplace component = fireplace.GetComponent<ZNetView>().GetComponent<Fireplace>();
-            if (!component) return null;
-            if (checkIfBurning)
-            {
-                if (!component.IsBurning()) return null;
-                if (component.m_wet) return null;
-            }
-            return component;
+
+            ZNetView netView = fireplace.GetComponent<ZNetView>();
+            if (!netView || !netView.IsValid()) return null;
+
+            if (checkIfBurning && (!fireplace.IsBurning() || fireplace.m_wet)) return null;
+
+            return fireplace;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Fireplace), "UpdateFireplace")]
         public static void FireplaceUpdateFireplace_Patch(Fireplace __instance)
         {
+            if (!__instance.m_canRefill) return;
+            
             ZDO zdo = __instance.m_nview.GetZDO();
-            float @float = zdo.GetFloat("fuel");
-            if (!zdo.GetBool("enabledFire"))
+            float currentFuel = zdo.GetFloat("fuel");
+            
+            if (!zdo.GetBool("enabledFire") && currentFuel > 0f)
             {
-                if (@float <= 0f) return;
                 zdo.Set("enabledFire", true);
-                zdo.Set("fuel", zdo.GetFloat("hiddenFuelAmount") + @float);
-            } 
-            if (!Mathf.Approximately(zdo.GetFloat("hiddenFuelAmount"), @float)) 
-            {
-                float value = @float;
-                zdo.Set("hiddenFuelAmount", value);
+                zdo.Set("fuel", zdo.GetFloat("hiddenFuelAmount") + currentFuel);
             }
+            
+            if (!Mathf.Approximately(zdo.GetFloat("hiddenFuelAmount"), currentFuel)) zdo.Set("hiddenFuelAmount", currentFuel);
+            
             if (zdo.GetFloat("fuel") > __instance.m_maxFuel) zdo.Set("fuel", __instance.m_maxFuel);
         }
 
@@ -49,45 +49,60 @@
         [HarmonyPatch(typeof(Fireplace), "GetHoverText")]
         public static string FireplaceGetHoverText_Patch(string __result, Fireplace __instance)
         {
-            string text = __result;
-            string text5 = keyPOCodeStringConfig.Value.ToString();
-            if (!__instance) return text;
+            if (!__instance || !__instance.m_canRefill) 
+                return __result;
+
+            string keyText = keyPOCodeStringConfig.Value.ToString();
             ZDO zdo = __instance.m_nview.GetZDO();
-            float @float = zdo.GetFloat("hiddenFuelAmount");
-            if (extinguishItemsConfig.Value && !__instance.IsBurning() && @float > 0f)
+            float hiddenFuel = zdo.GetFloat("hiddenFuelAmount");
+            int maxFuel = (int)__instance.m_maxFuel;
+
+            if (extinguishItemsConfig.Value)
             {
-                int num = (int)__instance.m_maxFuel;
-                text = string.Concat(text.Replace(string.Format("0/{0}", num), string.Format("{0}/{1}", (int)Mathf.Ceil(@float), num)), "\n[<color=yellow><b>", text5, "</b></color>] ", igniteStringConfig.Value);
+                // Показываем "зажечь" если костер потушен И есть сохраненное топливо
+                if (!__instance.IsBurning() && hiddenFuel > 0f)
+                {
+                    string fuelText = $"{(int)Mathf.Ceil(hiddenFuel)}/{maxFuel}";
+                    string resultWithFuel = __result.Replace($"0/{maxFuel}", fuelText);
+                    return $"{resultWithFuel}\n[<color=yellow><b>{keyText}</b></color>] {igniteStringConfig.Value}";
+                }
+                
+                // Показываем "потушить" если костер горит и не мокрый
+                if (__instance.IsBurning() && !__instance.m_wet)
+                {
+                    return $"{__result}\n[<color=yellow><b>{keyText}</b></color>] {extinguishStringConfig.Value}";
+                }
             }
-            if (!__instance.IsBurning()) return text;
-            if (__instance.m_wet) return text;
-            if (extinguishItemsConfig.Value) text = string.Concat(text, "\n[<color=yellow><b>", text5, "</b></color>] ", extinguishStringConfig.Value);
-            return text;
+            
+            return __result;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Player), "Update")]
         public static void PlayerUpdate_Patch(Player __instance)
         {
-            if (!__instance) return; 
-            bool keyUp = Input.GetKeyUp(configPOKey);
-            if (keyUp && extinguishItemsConfig.Value)
+            if (!__instance || !Input.GetKeyUp(configPOKey) || !extinguishItemsConfig.Value) return;
+
+            Fireplace fireplace = GetAndCheckFireplace(__instance, false);
+            if (!fireplace || !fireplace.m_canRefill) return;
+
+            ZDO zdo = fireplace.m_nview.GetZDO();
+            bool isCurrentlyEnabled = zdo.GetBool("enabledFire");
+            bool newState = !isCurrentlyEnabled;
+            
+            zdo.Set("enabledFire", newState);
+            fireplace.m_fuelAddedEffects.Create(fireplace.transform.position, fireplace.transform.rotation);
+            
+            if (newState) // Разжигаем - восстанавливаем сохраненное топливо
             {
-                Fireplace andCheckFireplace3 = GetAndCheckFireplace(__instance, false);
-                if (!andCheckFireplace3) return;
-                ZDO zdo2 = andCheckFireplace3.m_nview.GetZDO();
-                bool flag = !zdo2.GetBool("enabledFire");
-                zdo2.Set("enabledFire", flag);
-                if (!flag)
-                {
-                    andCheckFireplace3.m_fuelAddedEffects.Create(andCheckFireplace3.transform.position, andCheckFireplace3.transform.rotation);
-                    zdo2.Set("fuel", 0f);
-                }
-                if (flag)
-                {
-                    andCheckFireplace3.m_fuelAddedEffects.Create(andCheckFireplace3.transform.position, andCheckFireplace3.transform.rotation);
-                    zdo2.Set("fuel", zdo2.GetFloat("hiddenFuelAmount"));
-                }
+                float hiddenFuel = zdo.GetFloat("hiddenFuelAmount");
+                zdo.Set("fuel", hiddenFuel);
+            }
+            else // Тушим - сохраняем текущее топливо и устанавливаем 0
+            {
+                float currentFuel = zdo.GetFloat("fuel");
+                zdo.Set("hiddenFuelAmount", currentFuel);
+                zdo.Set("fuel", 0f);
             }
         }
     }

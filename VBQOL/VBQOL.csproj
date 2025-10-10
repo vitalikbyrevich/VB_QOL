@@ -40,16 +40,16 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddFuel\AddFuelUtil.cs" />
     <Compile Include="AddFuel\FireplacePatch.cs" />
     <Compile Include="AddFuel\SmelterPatch.cs" />
     <Compile Include="GlobalUsings.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="Network\ClutterSystemPatch.cs" />
     <None Include="0\HumanoidPatch.cs" />
-    <None Include="0\Vb_QualitySetting.cs" />
     <None Include="0\VB_SlopeDamagePatch.cs" />
-    <None Include="0\ZDOManPatch.cs" />
-    <None Include="0\ZRpcPatch.cs" />
     <Compile Include="Recycle\InventoryGuiPatch.cs" />
+    <Compile Include="Recycle\RecycleTab.cs" />
     <Compile Include="Recycle\RecycleUtil.cs" />
     <Compile Include="VB_BossDespawn.cs" />
     <Compile Include="VB_DayReset.cs" />
@@ -66,7 +66,7 @@
     <Compile Include="VB_SnakeCameraPatch.cs" />
     <Compile Include="VB_BlastFurnaceTalesAll.cs" />
     <Compile Include="VB_BetterLaders.cs" />
-    <Compile Include="VB_Pickable_UpdateRespawn_Patch.cs" />
+    <None Include="VB_Pickable_UpdateRespawn_Patch.cs" />
     <Compile Include="VB_ToolTierPatch.cs" />
     <Compile Include="VB_FirePlaceUtilites.cs" />
     <Compile Include="VB_BuildDamage.cs" />

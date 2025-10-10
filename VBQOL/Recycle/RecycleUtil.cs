@@ -2,7 +2,60 @@
 {
     public static class RecycleUtil
     {
-        public static int GetModifiedAmount(int quality, Piece.Requirement requirement) => (int)Math.Round(VBQOL.self.resourceMultiplier.Value * requirement.GetAmount(quality), 0);
+        internal static GameObject recycleObject;
+        internal static Button recycleButton;
+
+        internal static ConfigEntry<TabPositions> tabPosition;
+
+        public enum TabPositions
+        {
+            Left,
+            Middle,
+            Right,
+        }
+
+        internal static ConfigEntry<float> resourceMultiplier;
+        internal static ConfigEntry<bool> preserveOriginalItem;
+        internal static ConfigEntry<string> recyclebuttontext;
+
+        internal static bool InTabDeconstruct() => !recycleButton.interactable;
+
+        public static void RebuildRecycleTab()
+        {
+            if (recycleObject) return;
+
+            UnityEngine.Debug.LogWarning("Создана кнопка 'Разобрать'");
+
+            recycleObject = Object.Instantiate(InventoryGui.instance.m_tabUpgrade.gameObject, InventoryGui.instance.m_tabUpgrade.transform.parent);
+            if (!recycleObject)
+            {
+                UnityEngine.Debug.LogWarning("Не удалось создать кнопку 'Разобрать'.");
+                return;
+            }
+
+            recycleObject.name = "Recycle";
+            recycleObject.GetComponentInChildren<TMP_Text>().text = "Разбор";
+
+            recycleButton = recycleObject.GetComponent<Button>();
+            recycleButton.transform.localPosition = new Vector3(
+                recycleObject.transform.localPosition.x + ((recycleObject.GetComponent<RectTransform>().rect.width + 10f) * ((int)tabPosition.Value + 1)),
+                recycleObject.transform.localPosition.y, recycleObject.transform.localPosition.z
+            );
+            recycleButton.name = "RecycleButton";
+            recycleButton.onClick.RemoveAllListeners();
+            recycleButton.onClick.AddListener(() =>
+            {
+                UnityEngine.Debug.LogWarning("Selected recycle");
+                recycleButton.interactable = false;
+                InventoryGui.m_instance.m_tabCraft.interactable = true;
+                InventoryGui.m_instance.m_tabUpgrade.interactable = true;
+                InventoryGui.m_instance.UpdateCraftingPanel();
+            });
+
+            recycleObject.SetActive(false);
+        }
+
+        public static int GetModifiedAmount(int quality, Piece.Requirement requirement) => (int)Math.Round(resourceMultiplier.Value * requirement.GetAmount(quality), 0);
 
         public static bool HaveEmptySlotsForRecipe(Inventory inventory, Recipe recipe, int quality)
         {
