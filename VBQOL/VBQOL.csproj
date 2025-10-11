@@ -55,7 +55,7 @@
     <Compile Include="VB_DayReset.cs" />
     <Compile Include="VB_EquipInWater.cs" />
     <None Include="VB_MobBuff.cs" />
-    <Compile Include="VB_RuFontFix.cs" />
+    <Compile Include="VB_FontChange.cs" />
     <Compile Include="VB_WardPatch.cs" />
     <Compile Include="VB_AshLandsFix.cs" />
     <Compile Include="VB_CraftingStationLevelRange.cs" />
