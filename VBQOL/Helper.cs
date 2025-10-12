@@ -54,4 +54,22 @@ public static class Helper
             return GameServerClientState.Unknown;
         }
     }
+    
+    public static bool AreCheatsEnabled(Terminal terminal)
+    {
+        try
+        {
+            if (!Console.IsVisible()) return false;
+
+            if (!terminal) return false;
+
+            bool cheatEnabled = Traverse.Create(terminal).Field<bool>("m_cheat").Value;
+            return cheatEnabled;
+        }
+        catch (Exception ex)
+        {
+            UnityEngine.Debug.LogError($"Ошибка проверки чит-команд: {ex.Message}");
+            return false;
+        }
+    }
 }

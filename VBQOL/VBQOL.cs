@@ -9,7 +9,7 @@ namespace VBQOL
     class VBQOL : BaseUnityPlugin
     {
         private const string ModName = "VBQOL";
-        private const string ModVersion = "0.3.6";
+        private const string ModVersion = "0.3.7";
         private const string ModGUID = "VitByr.VBQOL";
         internal static VBQOL self;
 
@@ -108,7 +108,8 @@ namespace VBQOL
                 "Demister,wisplight;Wishbone,wishbone;par_item_ring_25,par_item_ring;par_item_ring_50,par_item_ring;par_item_ring_75,par_item_ring;par_item_ring_100,par_item_ring",
                 "\"ItemName1,SlotName;...;ItemNameN,SlotName\"\nНесколько предметов могут быть помещены в один и тот же слот (не все сразу), но один и тот же предмет не может быть помещен в несколько слотов.\nЧтобы изменения вступили в силу, игру необходимо перезапустить." );
             
-            VB_FontChange.fontname = Config.Bind("10 - FontFix", "fontname", "Valheim-Norsebold", "Требуется перезапуск. Допустимые шрифты: NotoSansJP-Regular SDF, NotoSansSC-Regular SDF, Valheim-AveriaSansLibre, NotoSansThai-Regular SDF, Valheim-AveriaSerifLibre, NotoSerifJP-Regular SDF, NotoSerifArmenian-Regular SDF, NotoSerifDevanagari-Regular SDF, NotoSerifGeorgian-Regular SDF, NotoSerifThai-Regular SDF, NotoEmoji-Regular SDF, NotoSerifMalayalam-Regular SDF, NotoSerifBengali-Regular SDF, NotoSansHebrew-Regular SDF, NotoSansArabic-Regular SDF, Fallback-NotoSerifNormal, NotoSerifSC-Regular SDF, NotoSerifKR-Regular SDF, NotoSansBengali-Regular SDF, Valheim-Prstartk, NotoSansGeorgian-Regular SDF, NotoSansArmenian-Regular SDF, Fallback-NotoSansNormal, NotoSansKR-Regular SDF, NotoSansMalayalam-Regular SDF, NotoSansDevanagari-Regular SDF, Valheim-Norsebold, NotoSansSC-Thin SDF, NotoSansJP-Thin SDF, NotoSansDevanagari-ExtraLight SDF, NotoSansThai-ExtraLight SDF, NotoSansBengali-ExtraLight SDF, Valheim-Norse, NotoSansArmenian-ExtraLight SDF, NotoSansKR-Thin SDF, NotoSansHebrew-Light SDF, NotoEmoji-Light SDF, NotoSansGeorgian-ExtraLight SDF, NotoSansArabic-Light SDF, NotoSansMalayalam-ExtraLight SDF, Fallback-NotoSansThin, Valheim-Rune");
+            VB_FontChange.fontname = Config.Bind("10 - FontFix", "fontname", "Valheim-Norse", 
+                "Требуется перезапуск. Допустимые шрифты: Valheim-Norse, Valheim-Norsebold, Valheim-AveriaSansLibre, Valheim-AveriaSerifLibre, Fallback-NotoSansNormal, Fallback-NotoSansThin, Fallback-NotoSerifNormal, LiberationSans SDF, LiberationSans SDF - Fallback, NotoSansJP-Regular SDF, NotoSansJP-Thin SDF, NotoSansKR-Regular SDF, NotoSansKR-Thin SDF, NotoSansSC-Regular SDF, NotoSansSC-Thin SDF, NotoSerifJP-Regular SDF, NotoSerifKR-Regular SDF, NotoSerifSC-Regular SDF");
        
            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), ModGUID);
         }
