@@ -34,8 +34,7 @@
 			if (!isCrouching) return;
 			bool isCrouchWalking = player.IsSneaking();
 
-			if ((LowerCameraWhen == CrouchPosition.Crouching) || (LowerCameraWhen == CrouchPosition.CrouchWalking && isCrouchWalking)
-			                                                  || (LowerCameraWhen == CrouchPosition.CrouchStanding && !isCrouchWalking))
+			if ((LowerCameraWhen == CrouchPosition.Crouching) || (LowerCameraWhen == CrouchPosition.CrouchWalking && isCrouchWalking) || (LowerCameraWhen == CrouchPosition.CrouchStanding && !isCrouchWalking))
 				__result += Vector3.up * -Mathf.Clamp(CameraHeightReduction, CameraMin, CameraMax);
 		}
 

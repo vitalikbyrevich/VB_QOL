@@ -1,71 +1,51 @@
-﻿using Debug = UnityEngine.Debug;
-
-namespace VBQOL
+﻿namespace VBQOL
 {
-	[HarmonyPatch]
-	public class VB_CraftingStationLevelRange
-	{
-		[HarmonyPatch(typeof(CraftingStation), "UpdateKnownStationsInRange")]
-		private static class UpdateKnownStationsInRange_Patch
-		{
-			private static void Postfix(Player player)
-			{
-				foreach (CraftingStation item in (List<CraftingStation>)AccessTools.Field(typeof(CraftingStation), "m_allStations").GetValue(null))
-				{
-					/*if (item.m_name == "$piece_cauldron") continue;
-					int level = item.GetLevel();
-					if (level > 1)
-					{
-						int num = stationDefaultRange + stationAmountIncrease * (level - 1);
-						ChangeStationRange(item, num);
-						continue;
-					}*/
+    [HarmonyPatch(typeof(CraftingStation), nameof(CraftingStation.GetStationBuildRange))]
+    public static class StationRangePatch
+    {
+        private static readonly HashSet<string> craftingStationChangeList = new HashSet<string>
+        {
+            "$piece_stonecutter"
+            // сюда можно добавить ещё: "$piece_forge", "$piece_cauldron" и т.п.
+        };
 
-					if (item.m_name == "$piece_stonecutter") ChangeChildStationRange(item);
-				//	if (item.m_name == "$piece_workbench" || item.m_name == "$piece_forge") ChangeStationRange(item, stationDefaultRange);
-				}
-			}
-		}
+        private static void Postfix(CraftingStation __instance, ref float __result)
+        {
+            // Проверяем, что станция в списке
+            if (!craftingStationChangeList.Contains(__instance.m_name)) return;
 
-		private static int stationAmountIncrease = 4;
+            // Собираем все верстаки в радиусе 50 м
+            List<CraftingStation> candidates = new List<CraftingStation>();
+            CraftingStation.FindStationsInRange("$piece_workbench", __instance.transform.position, 50f, candidates);
 
-		private static int stationDefaultRange = 20;
-		private static double stationSearchRange = 50f;
-	//	private static bool parentInheritance = true;
-	//	private static double inheritanceAmount = 0.5f;
+            if (candidates.Count == 0) return;
 
-		public static (bool, CraftingStation) IsParentWorkbenchInRange(CraftingStation station, string workbenchType, float searchRange)
-		{
-			CraftingStation craftingStation = CraftingStation.FindClosestStationInRange(workbenchType, station.transform.position, searchRange);
-			if (!craftingStation) return (false, craftingStation);
-			Vector2 a = new Vector2(craftingStation.transform.position.x, craftingStation.transform.position.z);
-			Vector2 b = new Vector2(station.transform.position.x, station.transform.position.z);
-			if (Vector2.Distance(a, b) <= craftingStation.m_rangeBuild) return (true, craftingStation);
-			return (false, craftingStation);
-		}
+            // Выбираем лучший верстак: сначала по уровню, потом по дистанции
+            CraftingStation best = candidates
+                .OrderByDescending(ws => ws.GetLevel())
+                .ThenBy(ws => Vector3.Distance(ws.transform.position, __instance.transform.position))
+                .FirstOrDefault();
 
-		public static void ChangeStationRange(CraftingStation station, float newRange)
-		{
-			if (!Mathf.Approximately(station.m_rangeBuild, newRange))
-			{
-				CraftingStation component = station.GetComponent<ZNetView>().GetComponent<CraftingStation>();
-				component.m_rangeBuild = newRange;
-				component.m_areaMarker.GetComponent<CircleProjector>().m_radius = newRange;
-				component.m_areaMarker.GetComponent<CircleProjector>().m_nrOfSegments = (int)Math.Ceiling(Math.Max(5f, 4f * newRange));
-				Debug.LogWarning($"{station.m_name} ({station.GetInstanceID()}) новый радиус {newRange} ");
-			}
-		}
+            if (!best) return;
 
-		public static void ChangeChildStationRange(CraftingStation station)
-		{
-			var (flag, craftingStation) = IsParentWorkbenchInRange(station, "$piece_workbench", (float)stationSearchRange);
-			if (!flag) ChangeStationRange(station, stationDefaultRange);
-			if (flag && craftingStation.GetLevel() > 1)
-			{
-				float newRange = stationDefaultRange + stationAmountIncrease * (float)(craftingStation.GetLevel() - 1) /* (float)inheritanceAmount*/;
-				ChangeStationRange(station, newRange);
-			}
-			else if (flag && craftingStation.GetLevel() == 1) ChangeStationRange(station, stationDefaultRange);
-		}
-	}
+            int level = best.GetLevel();
+            if (level <= 1) return;
+
+            float baseRange = 20f;
+            float extraPerLevel = 4f;
+
+            __result = baseRange + (level - 1) * extraPerLevel;
+
+            // Обновляем визуальный маркер
+            if (__instance.m_areaMarker)
+            {
+                var projector = __instance.m_areaMarker.GetComponent<CircleProjector>();
+                if (projector)
+                {
+                    projector.m_radius = __result;
+                    projector.m_nrOfSegments = (int)Mathf.Ceil(Mathf.Max(5f, 4f * __result));
+                }
+            }
+        }
+    }
 }

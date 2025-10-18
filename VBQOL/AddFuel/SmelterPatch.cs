@@ -3,22 +3,34 @@
     [HarmonyPatch]
     static class SmelterPatch
     {
+        // Добавляем защиту от спама
+        private static readonly Dictionary<Smelter, float> _lastOreInteraction = new Dictionary<Smelter, float>();
+        private const float INTERACTION_COOLDOWN = 0.3f;
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Smelter), nameof(Smelter.OnAddOre))]
         static bool SmelterOnAddOrePrefix(ref Smelter __instance, ref Switch sw, ref Humanoid user, ItemDrop.ItemData item, ref bool __result)
         {
             if (!AddFuelUtil.AFEnable.Value) return true;
 
+            // Защита от спама
+            if (_lastOreInteraction.TryGetValue(__instance, out float lastTime) && Time.time - lastTime < INTERACTION_COOLDOWN)
+            {
+                __result = false;
+                return false;
+            }
+            _lastOreInteraction[__instance] = Time.time;
+
             bool isAddOne = !Input.GetKey(AddFuelUtil.AFModifierKeyConfig.Value);
-            int queueSizeNow = AddFuelUtil.GetQueueSizeSafe(__instance);
-            
+            int queueSizeNow = __instance.GetQueueSize(); // Используем нативный метод
+
             if (queueSizeNow >= __instance.m_maxOre)
             {
                 user.Message(MessageHud.MessageType.Center, "$msg_itsfull");
                 return false;
             }
 
-            if (item == null) item = AddFuelUtil.FindCookableItem(__instance, user.GetInventory());
+            if (item == null) item = __instance.FindCookableItem(user.GetInventory());
 
             if (item == null)
             {
@@ -27,7 +39,7 @@
                 return false;
             }
 
-            if (!Traverse.Create(__instance).Method("IsItemAllowed", item.m_dropPrefab.name).GetValue<bool>())
+            if (!__instance.IsItemAllowed(item.m_dropPrefab.name))
             {
                 user.Message(MessageHud.MessageType.Center, "$msg_wontwork");
                 return false;
@@ -37,12 +49,51 @@
 
             int queueSizeLeft = __instance.m_maxOre - queueSizeNow;
             int stackToAdd = AddFuelUtil.CalculateStackToAdd(isAddOne, item.m_stack, queueSizeLeft);
-            
+
+            // ВАЖНО: Удаляем предметы на клиенте
             user.GetInventory().RemoveItem(item, stackToAdd);
-            AddFuelUtil.AddOreBulk(__instance, item.m_dropPrefab.name, stackToAdd);
-            
+
+            // Отправляем отдельные RPC вызовы для каждого предмета
+            // Это гарантирует синхронизацию как в ванильной игре
+            for (int i = 0; i < stackToAdd; i++) __instance.m_nview.InvokeRPC("RPC_AddOre", item.m_dropPrefab.name);
+
+            __instance.m_addedOreTime = Time.time;
+            if (__instance.m_addOreAnimationDuration > 0f) __instance.SetAnimation(active: true);
+
             __result = true;
             return false;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Smelter), nameof(Smelter.RPC_AddOre))]
+        static bool RPC_AddOrePrefix(Smelter __instance, long sender, string name)
+        {
+            // Только сервер должен обрабатывать логику добавления
+            if (!__instance.m_nview.IsOwner()) 
+            {
+                // Клиенты только воспроизводят эффекты
+                __instance.m_oreAddedEffects.Create(__instance.transform.position, __instance.transform.rotation);
+                return false; // Блокируем оригинальный метод на клиентах
+            }
+
+            // СЕРВЕР: проверяем лимиты перед добавлением
+            if (__instance.GetQueueSize() >= __instance.m_maxOre)
+            {
+                ZLog.Log("Smelter is full, ignoring RPC_AddOre");
+                return false;
+            }
+
+            if (!__instance.IsItemAllowed(name))
+            {
+                ZLog.Log("Item not allowed: " + name);
+                return false;
+            }
+
+            // Добавляем руду на сервере
+            __instance.QueueOre(name);
+            __instance.m_oreAddedEffects.Create(__instance.transform.position, __instance.transform.rotation);
+            
+            return false; // Блокируем оригинальный метод на сервере
         }
 
         [HarmonyPrefix]
@@ -60,7 +111,7 @@
                 return false;
             }
 
-            float fuelNow = AddFuelUtil.GetFuelSafe(__instance);
+            float fuelNow = __instance.GetFuel();
             if (fuelNow > __instance.m_maxFuel - 1)
             {
                 user.Message(MessageHud.MessageType.Center, "$msg_itsfull");
@@ -82,8 +133,10 @@
             int stackToAdd = AddFuelUtil.CalculateStackToAdd(isAddOne, item.m_stack, fuelLeft);
 
             user.GetInventory().RemoveItem(item, stackToAdd);
-            AddFuelUtil.AddFuelBulk(__instance, stackToAdd);
             
+            // Используем нативные методы для топлива
+            for (int i = 0; i < stackToAdd; i++) __instance.m_nview.InvokeRPC("RPC_AddFuel");
+
             __result = true;
             return false;
         }
@@ -93,7 +146,7 @@
         static string AddFuel_OnHoverAddFuel_Patch(string __result, Smelter __instance)
         {
             if (!AddFuelUtil.AFEnable.Value || !__instance) return __result;
-            
+
             string modifierKey = AddFuelUtil.AFModifierKeyConfig.Value.ToString();
             string useKey = AddFuelUtil.AFModifierKeyUseConfig.ToString();
             return $"{__result}\n[<color=yellow><b>{modifierKey}+{useKey}</b></color>] {AddFuelUtil.AFTextConfig.Value}";
@@ -109,5 +162,10 @@
             string useKey = AddFuelUtil.AFModifierKeyUseConfig.ToString();
             return $"{__result}\n[<color=yellow><b>{modifierKey}+{useKey}</b></color>] {AddFuelUtil.AFTextConfig.Value}";
         }
+
+        // Очистка словаря при уничтожении плавильни
+        [HarmonyPatch(typeof(Smelter), nameof(Smelter.OnDestroyed))]
+        [HarmonyPostfix]
+        static void SmelterOnDestroyPostfix(Smelter __instance) => _lastOreInteraction.Remove(__instance);
     }
 }

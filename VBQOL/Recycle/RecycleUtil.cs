@@ -24,12 +24,12 @@
         {
             if (recycleObject) return;
 
-            UnityEngine.Debug.LogWarning("Создана кнопка 'Разобрать'");
+            Debug.LogWarning("Создана кнопка 'Разобрать'");
 
             recycleObject = Object.Instantiate(InventoryGui.instance.m_tabUpgrade.gameObject, InventoryGui.instance.m_tabUpgrade.transform.parent);
             if (!recycleObject)
             {
-                UnityEngine.Debug.LogWarning("Не удалось создать кнопку 'Разобрать'.");
+                Debug.LogWarning("Не удалось создать кнопку 'Разобрать'.");
                 return;
             }
 
@@ -45,7 +45,7 @@
             recycleButton.onClick.RemoveAllListeners();
             recycleButton.onClick.AddListener(() =>
             {
-                UnityEngine.Debug.LogWarning("Selected recycle");
+                Debug.LogWarning("Selected recycle");
                 recycleButton.interactable = false;
                 InventoryGui.m_instance.m_tabCraft.interactable = true;
                 InventoryGui.m_instance.m_tabUpgrade.interactable = true;

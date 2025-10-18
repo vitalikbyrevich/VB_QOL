@@ -3,13 +3,13 @@
 	[HarmonyPatch(typeof(MessageHud))]
 	public static class VB_BetterPickupNotifications
 	{
-		public static ConfigEntry<float> MessageLifetime;
-		public static ConfigEntry<float> MessageFadeTime;
-		public static ConfigEntry<float> MessageBumpTime;
-		public static ConfigEntry<bool> ResetMessageTimerOnDupePickup;
-		public static ConfigEntry<float> MessageVerticalSpacingModifier;
-		public static ConfigEntry<float> MessageTextHorizontalSpacingModifier;
-		public static ConfigEntry<float> MessageTextVerticalModifier;
+		public static float MessageLifetime = 4f;
+		public static float MessageFadeTime = 4f;
+		public static float MessageBumpTime = 4f;
+		public static bool ResetMessageTimerOnDupePickup = false;
+		public static float MessageVerticalSpacingModifier = 1f;
+		public static float MessageTextHorizontalSpacingModifier = 1.5f;
+		public static float MessageTextVerticalModifier = 1f;
 		
 		private static List<PickupMessage> PickupMessages;
 		private static List<PickupDisplay> PickupDisplays;
@@ -37,18 +37,18 @@
 					m_text = text,
 					m_amount = amount,
 					m_icon = icon,
-					Timer = MessageLifetime.Value
+					Timer = MessageLifetime
 				};
                 PickupDisplays[num].Display(PickupMessages[num]);
 			}
 			else
 			{
                 PickupMessages[num].m_amount += amount;
-                if (ResetMessageTimerOnDupePickup.Value) PickupMessages[num].Timer = MessageLifetime.Value;
+                if (ResetMessageTimerOnDupePickup) PickupMessages[num].Timer = MessageLifetime;
                 else
                 {
-                    PickupMessages[num].Timer += MessageBumpTime.Value;
-					if (PickupMessages[num].Timer > MessageLifetime.Value) PickupMessages[num].Timer = MessageLifetime.Value;
+                    PickupMessages[num].Timer += MessageBumpTime;
+					if (PickupMessages[num].Timer > MessageLifetime) PickupMessages[num].Timer = MessageLifetime;
 					PickupDisplays[num].Display(PickupMessages[num]);
 				}
 			}
@@ -86,8 +86,13 @@
 		[HarmonyPatch("OnDestroy")]
 		public static void OnDestroyPostfix()
 		{
-            PickupMessages = null;
-            PickupDisplays = null;
+			foreach (var display in PickupDisplays)
+			{
+				if (display?.RootGO) Object.Destroy(display.RootGO);
+			}
+			PickupDisplays.Clear();
+			PickupMessages.Clear();
+
 		}
 
 		private class PickupMessage : MessageHud.MsgData
@@ -109,14 +114,16 @@
 				RootGO.transform.SetAsFirstSibling();
 				IconComp = RootGO.GetComponentInChildren<Image>();
 				TextComp = RootGO.GetComponentInChildren<TMP_Text>();
-				RootGO.transform.position += Vector3.up * -(IconComp.rectTransform.rect.height * MessageVerticalSpacingModifier.Value) * (Index + 1);
-				TextComp.gameObject.transform.position += Vector3.up * -IconComp.rectTransform.rect.height * MessageTextVerticalModifier.Value + Vector3.right * IconComp.rectTransform.rect.width * MessageTextHorizontalSpacingModifier.Value;
+				RootGO.transform.position += Vector3.up * -(IconComp.rectTransform.rect.height * MessageVerticalSpacingModifier) * (Index + 1);
+				TextComp.gameObject.transform.position += Vector3.up * -IconComp.rectTransform.rect.height * MessageTextVerticalModifier + Vector3.right * IconComp.rectTransform.rect.width * MessageTextHorizontalSpacingModifier;
 			}
 
 			public void Display(PickupMessage msg)
 			{
 				try
 				{
+					if (!TextComp || !IconComp) return;
+
 					TextComp.canvasRenderer.SetAlpha(1f);
 					TextComp.CrossFadeAlpha(1f, 0f, true);
 					if (msg.m_amount > 1) TextComp.text = msg.m_text + " x" + msg.m_amount;
@@ -127,7 +134,7 @@
 				}
 				catch
 				{
-					if (msg != null && msg.m_icon != null)
+					if (msg != null && msg.m_icon)
 					{
 						CreateUI();
 						Display(msg);
@@ -137,8 +144,8 @@
 
 			public void FadeAway()
 			{
-                TextComp.CrossFadeAlpha(0f, MessageFadeTime.Value, true);
-				IconComp.CrossFadeAlpha(0f, MessageFadeTime.Value, true);
+                TextComp.CrossFadeAlpha(0f, MessageFadeTime, true);
+				IconComp.CrossFadeAlpha(0f, MessageFadeTime, true);
 			}
 			public GameObject RootGO;
 			private Image IconComp;

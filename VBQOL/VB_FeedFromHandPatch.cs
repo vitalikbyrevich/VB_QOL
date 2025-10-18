@@ -9,52 +9,51 @@
 			public static bool Prefix(Humanoid __instance, ItemDrop.ItemData item)
 			{
 				GameObject hoverObject = __instance.GetHoverObject();
-                bool result;
-                if (!hoverObject) result = true;
-                else
-                {
-	                if (!hoverObject.GetComponent<MonsterAI>() && !hoverObject.GetComponent<Character>() && !hoverObject.GetComponent<Tameable>() && !hoverObject.GetComponent<Humanoid>()) result = true;
-	                else
-	                {
-						MonsterAI component = hoverObject.GetComponent<MonsterAI>();
-						Character component2 = hoverObject.GetComponent<Character>();
-						Tameable component3 = hoverObject.GetComponent<Tameable>();
-						Humanoid component4 = hoverObject.GetComponent<Humanoid>();
-                        if (component2.IsTamed() && component.CanConsume(item))
+				bool result = true;
+
+				if (hoverObject)
+				{
+					MonsterAI component = hoverObject.GetComponent<MonsterAI>();
+					Character component2 = hoverObject.GetComponent<Character>();
+					Tameable component3 = hoverObject.GetComponent<Tameable>();
+					Humanoid component4 = hoverObject.GetComponent<Humanoid>();
+
+					if (component || component2 || component3 || component4)
+					{
+						if (component2.IsTamed() && component.CanConsume(item))
 						{
 							string hoverName = component2.GetHoverName();
-                            if (component2.GetHealth() < component2.GetMaxHealth())
+							if (component2.GetHealth() < component2.GetMaxHealth())
 							{
-								component2.Heal(50f);
-								component3.ResetFeedingTimer();
-								component3.Interact(component4, false, false);
-								__instance.DoInteractAnimation(hoverObject);
-								__instance.Message(MessageHud.MessageType.Center, hoverName + " $hud_tamelove");
-								Inventory inventory = __instance.GetInventory();
-								inventory.RemoveOneItem(item);
+								FeedCreature(__instance, component2, component3, component4, item);
+								__instance.Message(MessageHud.MessageType.Center, $"{hoverName} подлечился и перекусил!");
 								result = false;
 							}
-							if (component3.IsHungry())
+							else if (component3.IsHungry())
 							{
-								component2.Heal(50f);
-								component3.ResetFeedingTimer();
-								component3.Interact(component4, false, false);
-								__instance.DoInteractAnimation(hoverObject);
-								__instance.Message(MessageHud.MessageType.Center, hoverName + " $hud_tamelove");
-								Inventory inventory = __instance.GetInventory();
-								inventory.RemoveOneItem(item);
+								FeedCreature(__instance, component2, component3, component4, item);
+								__instance.Message(MessageHud.MessageType.Center, $"{hoverName} с удовольствием поел!");
 								result = false;
 							}
 							else
 							{
-								__instance.Message(MessageHud.MessageType.Center, hoverName + " $msg_nomore");
+								__instance.Message(MessageHud.MessageType.Center, $"{hoverName} не голоден.");
 								result = false;
 							}
 						}
-						else result = true;
-	                }
+					}
 				}
 				return result;
+			}
+
+			private static void FeedCreature(Humanoid feeder, Character creature, Tameable tameable, Humanoid targetHumanoid, ItemDrop.ItemData item)
+			{
+				creature.Heal(25f);
+				tameable.ResetFeedingTimer();
+				tameable.Interact(targetHumanoid, false, false);
+				feeder.DoInteractAnimation(creature.gameObject);
+				feeder.Message(MessageHud.MessageType.Center, creature.GetHoverName() + " $hud_tamelove");
+				feeder.GetInventory().RemoveOneItem(item);
 			}
 		}
 	}

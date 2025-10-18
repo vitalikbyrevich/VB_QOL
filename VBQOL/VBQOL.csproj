@@ -42,19 +42,21 @@
   <ItemGroup>
     <Compile Include="AddFuel\AddFuelUtil.cs" />
     <Compile Include="AddFuel\FireplacePatch.cs" />
+    <None Include="0\smelterfix.cs" />
+    <None Include="0\VB_CheckConsoleUse.cs" />
     <Compile Include="AddFuel\SmelterPatch.cs" />
+    <Compile Include="Debuging\VB_PickableDebug.cs" />
     <Compile Include="GlobalUsings.cs" />
     <Compile Include="Helper.cs" />
-    <Compile Include="Network\ClutterSystemPatch.cs" />
+    <Compile Include="Network\VB_GraphicPatch.cs" />
     <None Include="0\HumanoidPatch.cs" />
+    <None Include="0\VB_MobBuff.cs" />
     <None Include="0\VB_SlopeDamagePatch.cs" />
     <Compile Include="Recycle\InventoryGuiPatch.cs" />
-    <Compile Include="Recycle\RecycleTab.cs" />
     <Compile Include="Recycle\RecycleUtil.cs" />
     <Compile Include="VB_BossDespawn.cs" />
     <Compile Include="VB_DayReset.cs" />
     <Compile Include="VB_EquipInWater.cs" />
-    <None Include="VB_MobBuff.cs" />
     <Compile Include="VB_FontChange.cs" />
     <Compile Include="VB_WardPatch.cs" />
     <Compile Include="VB_AshLandsFix.cs" />
@@ -66,7 +68,7 @@
     <Compile Include="VB_SnakeCameraPatch.cs" />
     <Compile Include="VB_BlastFurnaceTalesAll.cs" />
     <Compile Include="VB_BetterLaders.cs" />
-    <None Include="VB_Pickable_UpdateRespawn_Patch.cs" />
+    <Compile Include="VB_Pickable_UpdateRespawn_Patch.cs" />
     <Compile Include="VB_ToolTierPatch.cs" />
     <Compile Include="VB_FirePlaceUtilites.cs" />
     <Compile Include="VB_BuildDamage.cs" />
@@ -109,6 +111,12 @@
     <Reference Include="Jotunn">
       <HintPath>..\..\..\0lib\Jotunn.dll</HintPath>
     </Reference>
+    <Reference Include="Splatform">
+      <HintPath>..\..\..\0lib\Splatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Splatform.Steam">
+      <HintPath>..\..\..\0lib\Splatform.Steam.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <HintPath>..\..\..\0lib\System.dll</HintPath>
     </Reference>
@@ -135,6 +143,9 @@
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>..\..\..\0lib\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\..\..\0lib\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\0lib\UnityEngine.UI.dll</HintPath>

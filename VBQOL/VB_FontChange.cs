@@ -31,16 +31,16 @@
             {
                 MainFont = cyrillicFonts[0];
                 mainFontName.Value = MainFont.name;
-                UnityEngine.Debug.Log($"Основной шрифт из конфига не найден, установлен первый поддерживающий кириллицу: {MainFont.name}");
+                Debug.Log($"Основной шрифт из конфига не найден, установлен первый поддерживающий кириллицу: {MainFont.name}");
             }
             
             if (!MainFont)
             {
-                UnityEngine.Debug.LogError($"Не найдено ни одного шрифта, поддерживающего кириллицу!");
+                Debug.LogError($"Не найдено ни одного шрифта, поддерживающего кириллицу!");
                 return;
             }
             
-            UnityEngine.Debug.Log($"Основной шрифт: {mainFontName.Value}, Второстепенный: {secondaryFontName.Value}");
+            Debug.Log($"Основной шрифт: {mainFontName.Value}, Второстепенный: {secondaryFontName.Value}");
             isInitialized = true;
 
             ApplyMainFontToAllExistingObjects();
@@ -170,7 +170,7 @@
             ApplySecondaryFontToAllTextsInObject(__instance.gameObject);
         }
 
-        private static void ApplyMainFontToAllExistingObjects()
+        public static void ApplyMainFontToAllExistingObjects()
         {
             if (!MainFont) return;
             
@@ -235,6 +235,76 @@
             
             foreach (var text in textsUI) if (text && text.font != SecondaryFont) text.font = SecondaryFont;
             foreach (var text in texts3D) if (text && text.font != SecondaryFont) text.font = SecondaryFont;
+        }
+        
+        public static void ReloadFonts()
+        {
+            var allFonts = GetAllFontsInGame();
+            var cyrillicFonts = FilterCyrillicFonts(allFonts);
+    
+            MainFont = cyrillicFonts.FirstOrDefault(x => x.name == mainFontName.Value);
+            SecondaryFont = cyrillicFonts.FirstOrDefault(x => x.name == secondaryFontName.Value);
+    
+            if (!MainFont && cyrillicFonts.Count > 0)
+            {
+                MainFont = cyrillicFonts[0];
+                mainFontName.Value = MainFont.name;
+                UnityEngine.Debug.Log($"Основной шрифт из конфига не найден, установлен первый поддерживающий кириллицу: {MainFont.name}");
+            }
+    
+            if (!MainFont)
+            {
+                UnityEngine.Debug.LogError($"Не найдено ни одного шрифта, поддерживающего кириллицу!");
+                return;
+            }
+    
+            UnityEngine.Debug.Log($"Основной шрифт: {mainFontName.Value}, Второстепенный: {secondaryFontName.Value}");
+        }
+        
+        public static void RefreshAllUIElements()
+        {
+            ReloadFonts();
+            
+            var menu = Object.FindObjectOfType<Menu>();
+            if (menu) ApplyMainFontToAllTextsInObject(menu.gameObject, 30, 10);
+            
+            var Settings = Object.FindObjectOfType<Settings>();
+            if (Settings) ApplyMainFontToAllTextsInObject(Settings.gameObject, 25, 10);
+            
+            var hud = Object.FindObjectOfType<Hud>();
+            if (hud) ApplyMainFontToAllTextsInObject(hud.gameObject, 20, 10);
+            
+            var inventory = Object.FindObjectOfType<InventoryGui>();
+            if (inventory) ApplySecondaryFontToAllTextsInObject(inventory.gameObject);
+            if (inventory) ApplyMainFontToAllTextsInObject(inventory.m_craftButton.gameObject, 20, 10);
+            if (inventory) ApplyMainFontToAllTextsInObject(inventory.m_skillsDialog.gameObject, 20, 10);
+            if (inventory) ApplyMainFontToAllTextsInObject(inventory.m_tabUpgrade.gameObject, 20, 10);
+            if (inventory) ApplyMainFontToAllTextsInObject(inventory.m_tabCraft.gameObject, 20, 10);
+            if (inventory) ApplyMainFontToAllTextsInObject(inventory.m_craftingStationName.gameObject, 40, 20);
+            if (inventory) ApplyMainFontToAllTextsInObject(inventory.m_qualityPanel.gameObject, 25, 10);
+            if (inventory) ApplyMainFontToAllTextsInObject(inventory.m_infoPanel.gameObject, 20, 10);
+            if (inventory) ApplyMainFontToAllTextsInObject(inventory.m_textsDialog.gameObject, 25, 10);
+            if (inventory) ApplyMainFontToAllTextsInObject(inventory.m_trophiesPanel.gameObject, 25, 10);
+            
+            var minimap = Object.FindObjectOfType<Minimap>();
+            if (minimap) ApplyMainFontToAllTextsInObject(minimap.gameObject, 20, 10);
+            
+            var terminal = Object.FindObjectOfType<Terminal>();
+            if (terminal) ApplySecondaryFontToAllTextsInObject(terminal.gameObject);
+            
+            var connectPanel = Object.FindObjectOfType<ConnectPanel>();
+            if (connectPanel) ApplyMainFontToAllTextsInObject(connectPanel.gameObject, 17, 10);
+            
+            var tutorial = Object.FindObjectOfType<Tutorial>();
+            if (tutorial) ApplyMainFontToAllTextsInObject(tutorial.gameObject, 20, 10);
+            
+            var textViewer = Object.FindObjectOfType<TextViewer>();
+            if (textViewer) ApplyMainFontToAllTextsInObject(textViewer.m_text.gameObject, 25, 25);
+            
+            var messageHud = Object.FindObjectOfType<MessageHud>();
+            if (messageHud) ApplyMainFontToAllTextsInObject(messageHud.gameObject, 55, 35);
+            if (messageHud) ApplyMainFontToAllTextsInObject(messageHud.m_unlockMsgPrefab.gameObject, 25, 15);
+            if (messageHud) ApplyMainFontToAllTextsInObject(messageHud.m_messageText.gameObject, 25, 15);
         }
     }
 }

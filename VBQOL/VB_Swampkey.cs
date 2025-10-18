@@ -2,7 +2,7 @@
 
 namespace VBQOL
 {
-	[HarmonyPatch(typeof(Door), "Interact")]
+	[HarmonyPatch(typeof(Door), nameof(Door.Interact))]
 	public static class VB_Swampkey
 	{
 		private static void Postfix(Door __instance, ref bool __result, Humanoid character)
