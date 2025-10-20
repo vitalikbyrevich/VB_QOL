@@ -32,10 +32,7 @@ public class VB_EquipInWater
         if (item != null && !IsItemAllowed(item.m_dropPrefab.name)) Player.m_localPlayer?.UnequipItem(item);
     }
 
-    private static bool IsItemAllowed(string itemName)
-    {
-        return EiW_CustomStrings.Contains(itemName);
-    }
+    private static bool IsItemAllowed(string itemName) => EiW_CustomStrings.Contains(itemName);
 
     private static IEnumerable<MethodBase> TargetMethods() =>
     [

@@ -12,7 +12,7 @@ namespace VBQOL
     class VBQOL : BaseUnityPlugin
     {
         private const string ModName = "VBQOL";
-        private const string ModVersion = "0.4.0";
+        private const string ModVersion = "0.4.1";
         private const string ModGUID = "VitByr.VBQOL";
         internal static VBQOL self;
         internal static bool paradoxbuild;
@@ -44,7 +44,7 @@ namespace VBQOL
             VB_EquipInWater.EiW_CustomStrings = [..  VB_EquipInWater.EiW_Custom.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)];
             
             VB_FirePlaceUtilites.extinguishItemsConfig = Config.Bind("05 - EnableFire", "EF_Enable", true, "Вкл/Выкл секцию");
-            VB_FirePlaceUtilites.extinguishStringConfig = Config.Bind("56 - EnableFire", "EF_Extinguish_Fire_Text", "Тушить огонь", "Текст отображаемый при наведении курсора на огонь");
+            VB_FirePlaceUtilites.extinguishStringConfig = Config.Bind("05 - EnableFire", "EF_Extinguish_Fire_Text", "Тушить огонь", "Текст отображаемый при наведении курсора на огонь");
             VB_FirePlaceUtilites.igniteStringConfig = Config.Bind("05 - EnableFire", "EF_Ignite_Fire_Text", "Разжечь огонь", "Текст, отображаемый при наведении курсора на огонь, если тот потушен");
             VB_FirePlaceUtilites.keyPOCodeStringConfig = Config.Bind("05 - EnableFire", "EF_Put_Out_Fire_Key", KeyCode.LeftAlt, "Клавиша чтобы потушить огонь.");
             VB_FirePlaceUtilites.configPOKey = (KeyCode)Enum.Parse(typeof(KeyCode), VB_FirePlaceUtilites.keyPOCodeStringConfig.Value.ToString());

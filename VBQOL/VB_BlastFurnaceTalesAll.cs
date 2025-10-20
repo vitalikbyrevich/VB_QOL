@@ -4,7 +4,7 @@
     public class VB_BlastFurnaceTalesAll
     {
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(Smelter), "Awake")]
+        [HarmonyPatch(typeof(Smelter), nameof(Smelter.Awake))]
         private static void BlastFurnacePatch(ref Smelter __instance)
         {
             if (__instance.m_name != "$piece_blastfurnace") return;

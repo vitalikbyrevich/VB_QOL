@@ -3,7 +3,7 @@
 	[HarmonyPatch]
     public class VB_ClearLogPatch
 	{
-		[HarmonyPatch(typeof(ConsoleLogListener), "LogEvent")]
+		[HarmonyPatch(typeof(ConsoleLogListener), nameof(ConsoleLogListener.LogEvent))]
 		[HarmonyPrefix]
 		private static bool ConsoleLogListenerLog(object sender, LogEventArgs eventArgs)
 		{

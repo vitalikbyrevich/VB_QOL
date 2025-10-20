@@ -15,7 +15,7 @@
 		private static List<PickupDisplay> PickupDisplays;
 
 		[HarmonyPrefix]
-		[HarmonyPatch("ShowMessage")]
+		[HarmonyPatch(nameof(MessageHud.ShowMessage))]
 		public static bool ShowMessagePrefix(MessageHud __instance, MessageHud.MessageType type, string text, int amount, Sprite icon)
 		{
 			if (Hud.IsUserHidden()) return false;
@@ -56,7 +56,7 @@
 		}
 
 		[HarmonyPrefix]
-		[HarmonyPatch("UpdateMessage")]
+		[HarmonyPatch(nameof(MessageHud.UpdateMessage))]
 		public static bool UpdateMessagePrefix(MessageHud __instance, float dt)
 		{
 			for (int i = 0; i < PickupMessages.Count; i++)
@@ -75,7 +75,7 @@
 		}
 
 		[HarmonyPostfix]
-		[HarmonyPatch("Awake")]
+		[HarmonyPatch(nameof(MessageHud.Awake))]
 		public static void AwakePostfix()
 		{
             PickupMessages = new List<PickupMessage>();
@@ -83,7 +83,7 @@
 		}
 
 		[HarmonyPostfix]
-		[HarmonyPatch("OnDestroy")]
+		[HarmonyPatch(nameof(MessageHud.OnDestroy))]
 		public static void OnDestroyPostfix()
 		{
 			foreach (var display in PickupDisplays)
