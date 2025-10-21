@@ -1,5 +1,6 @@
 using Jotunn.Extensions;
 using VBQOL.AddFuel;
+using VBQOL.BossDespawn;
 using VBQOL.Network;
 using VBQOL.Recycle;
 
@@ -24,8 +25,8 @@ namespace VBQOL
             paradoxbuild = CheckIfModIsLoaded("VitByr.ParadoxBuild");
             seasons = CheckIfModIsLoaded("shudnal.Seasons");
 
-            VB_BossDespawn.radiusConfig = Config.BindConfig("01 - BossDespawn", "Despawn radius", 150f, "Радиус обнаружения игроков", synced: true); 
-            VB_BossDespawn.despawnDelayConfig = Config.BindConfig("01 - BossDespawn", "Despawn delay", 4f, "Через сколько минут босс деспавнится", synced: true);
+            VB_BossMain.radiusConfig = Config.BindConfig("01 - BossDespawn", "Despawn radius", 100f, "Радиус обнаружения игроков", synced: true); 
+            VB_BossMain.despawnDelayConfig = Config.BindConfig("01 - BossDespawn", "Despawn delay", 5f, "Через сколько минут босс деспавнится", synced: true);
             
             AddFuelUtil.AFEnable = Config.Bind("02 - AddAllFuel", "AF_Enable", true, "Вкл/Выкл секцию"); 
             AddFuelUtil.AFModifierKeyConfig = Config.Bind("02 - AddAllFuel", "AF_ModifierKey", KeyCode.LeftShift, new ConfigDescription("Клавиша для добавления сразу стака в печь/ плавильню.")); 

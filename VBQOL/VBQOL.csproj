@@ -45,6 +45,10 @@
     <None Include="0\smelterfix.cs" />
     <None Include="0\VB_CheckConsoleUse.cs" />
     <Compile Include="AddFuel\SmelterPatch.cs" />
+    <Compile Include="BossDespawn\VB_BossMessage.cs" />
+    <Compile Include="BossDespawn\VB_BossTaunts.cs" />
+    <Compile Include="BossDespawn\VB_BossUtill.cs" />
+    <Compile Include="BossDespawn\VB_BossMain.cs" />
     <Compile Include="Debuging\VB_PickableDebug.cs" />
     <Compile Include="GlobalUsings.cs" />
     <Compile Include="Helper.cs" />
@@ -54,7 +58,6 @@
     <None Include="0\VB_SlopeDamagePatch.cs" />
     <Compile Include="Recycle\InventoryGuiPatch.cs" />
     <Compile Include="Recycle\RecycleUtil.cs" />
-    <Compile Include="VB_BossDespawn.cs" />
     <Compile Include="VB_DayReset.cs" />
     <Compile Include="VB_EquipInWater.cs" />
     <Compile Include="VB_FontChange.cs" />
