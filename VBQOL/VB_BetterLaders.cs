@@ -1,11 +1,11 @@
 ﻿namespace VBQOL
 {
+    [HarmonyPatch]
     [HarmonyPatch(typeof(AutoJumpLedge), nameof(AutoJumpLedge.OnTriggerStay))]
     public static class VB_BetterLaders
     {
         private static bool Prefix(AutoJumpLedge __instance, Collider collider)
         {
-            if (Helper.IsServer()) return true;
             if (!(collider.GetComponent<Character>() is Player player) || player != Player.m_localPlayer) return true;
 
             float ledgeAngle = __instance.gameObject.transform.rotation.eulerAngles.y;

@@ -10,8 +10,7 @@
         private static bool isInitialized;
 
         // Белый список шрифтов, поддерживающих кириллицу
-        private static string[] knownCyrillicFonts = new string[]
-        {
+        private static string[] knownCyrillicFonts = {
             "Valheim-Norse", "Valheim-Norsebold", "Valheim-AveriaSansLibre", "Valheim-AveriaSerifLibre", "LiberationSans SDF", "LiberationSans SDF - Fallback"
         };
 
@@ -36,7 +35,7 @@
             
             if (!MainFont)
             {
-                Debug.LogError($"Не найдено ни одного шрифта, поддерживающего кириллицу!");
+                Debug.LogError("Не найдено ни одного шрифта, поддерживающего кириллицу!");
                 return;
             }
             
@@ -195,7 +194,7 @@
                     fixedCount++;
                 }
             }
-            UnityEngine.Debug.Log($"Применен основной шрифт к {fixedCount} текстовым элементам");
+            Debug.Log($"Применен основной шрифт к {fixedCount} текстовым элементам");
         }
 
         private static void ApplyMainFontToAllTextsInObject(GameObject obj, int fontSize, int fontSizeMin)
@@ -249,16 +248,16 @@
             {
                 MainFont = cyrillicFonts[0];
                 mainFontName.Value = MainFont.name;
-                UnityEngine.Debug.Log($"Основной шрифт из конфига не найден, установлен первый поддерживающий кириллицу: {MainFont.name}");
+                Debug.Log($"Основной шрифт из конфига не найден, установлен первый поддерживающий кириллицу: {MainFont.name}");
             }
     
             if (!MainFont)
             {
-                UnityEngine.Debug.LogError($"Не найдено ни одного шрифта, поддерживающего кириллицу!");
+                Debug.LogError("Не найдено ни одного шрифта, поддерживающего кириллицу!");
                 return;
             }
     
-            UnityEngine.Debug.Log($"Основной шрифт: {mainFontName.Value}, Второстепенный: {secondaryFontName.Value}");
+            Debug.Log($"Основной шрифт: {mainFontName.Value}, Второстепенный: {secondaryFontName.Value}");
         }
         
         public static void RefreshAllUIElements()

@@ -5,7 +5,7 @@
     {
         public static long vanillaDayLengthSec;
 
-        [HarmonyPatch(typeof(EnvMan), "Awake")]
+        [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.Awake))]
         public static class EnvMan_Awake_Patch
         {
             public static void Postfix(ref long ___m_dayLengthSec)

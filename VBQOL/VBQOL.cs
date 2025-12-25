@@ -1,7 +1,6 @@
 using Jotunn.Extensions;
 using VBQOL.AddFuel;
-using VBQOL.BossDespawn;
-using VBQOL.Network;
+//using VBQOL.Network;
 using VBQOL.Recycle;
 
 namespace VBQOL
@@ -13,7 +12,7 @@ namespace VBQOL
     class VBQOL : BaseUnityPlugin
     {
         private const string ModName = "VBQOL";
-        private const string ModVersion = "0.4.1";
+        private const string ModVersion = "0.4.3";
         private const string ModGUID = "VitByr.VBQOL";
         internal static VBQOL self;
         internal static bool paradoxbuild;
@@ -24,10 +23,12 @@ namespace VBQOL
             self = this;
             paradoxbuild = CheckIfModIsLoaded("VitByr.ParadoxBuild");
             seasons = CheckIfModIsLoaded("shudnal.Seasons");
-
-            VB_BossMain.radiusConfig = Config.BindConfig("01 - BossDespawn", "Despawn radius", 100f, "Радиус обнаружения игроков", synced: true); 
-            VB_BossMain.despawnDelayConfig = Config.BindConfig("01 - BossDespawn", "Despawn delay", 5f, "Через сколько минут босс деспавнится", synced: true);
             
+            VB_FontChange.mainFontName = Config.Bind("01 - FontFix", "mainFontName", "Valheim-Norse", 
+                            "Основной шрифт. Допустимые шрифты: Valheim-Norse, Valheim-Norsebold, Valheim-AveriaSansLibre, Valheim-AveriaSerifLibre, LiberationSans SDF, LiberationSans SDF - Fallback. Требуется перезапуск.");
+            VB_FontChange.secondaryFontName = Config.Bind("01 - FontFix", "secondaryFontName", "Valheim-AveriaSerifLibre", 
+                            "Остальной шрифт. Допустимые шрифты: Valheim-Norse, Valheim-Norsebold, Valheim-AveriaSansLibre, Valheim-AveriaSerifLibre, LiberationSans SDF, LiberationSans SDF - Fallback. Требуется перезапуск.");
+                        
             AddFuelUtil.AFEnable = Config.Bind("02 - AddAllFuel", "AF_Enable", true, "Вкл/Выкл секцию"); 
             AddFuelUtil.AFModifierKeyConfig = Config.Bind("02 - AddAllFuel", "AF_ModifierKey", KeyCode.LeftShift, new ConfigDescription("Клавиша для добавления сразу стака в печь/ плавильню.")); 
             AddFuelUtil.AFTextConfig = Config.Bind("02 - AddAllFuel", "AF_Extinguish_Text", "Добавить стак", new ConfigDescription("Текст отображаемый при наведении печь/костер"));
@@ -55,7 +56,7 @@ namespace VBQOL
             RecycleUtil.resourceMultiplier = Config.BindConfig("06 - Recycle", "R_ResourceMultiplier", 0.35f, "Количество ресурсов, возвращаемых в результате разбора (от 0 до 1, где 1 возвращает 100% ресурсов, а 0 - 0%)", synced: true);
             RecycleUtil.preserveOriginalItem = Config.BindConfig("06 - Recycle", "R_PreserveOriginalItem", true, "Сохранять ли данные оригинального предмета при понижении уровня. Полезно для модов, добавляющих дополнительные свойства к предметам, например EpicLoot.\nОтключите, если возникли проблемы.", synced: true);
 
-            VB_GraphicPatch.soft_particles = Config.Bind("07 - QualitySettings", "soft_particles", true, "Убирает резкое обрезание частиц при пересечении с геометрией, создавая плавное смешивание.");
+       /*     VB_GraphicPatch.soft_particles = Config.Bind("07 - QualitySettings", "soft_particles", true, "Убирает резкое обрезание частиц при пересечении с геометрией, создавая плавное смешивание.");
             VB_GraphicPatch.particle_raycast_budget = Config.Bind("07 - QualitySettings", "particle_raycast_budget", 1024, "Ограничивает количество проверок столкновений частиц за кадр");
             VB_GraphicPatch.soft_vegetation = Config.Bind("07 - QualitySettings", "soft_vegetation", false, "Добавляет сглаживание к краям растительности");
             VB_GraphicPatch.streaming_mipmaps_memory_budget = Config.Bind("07 - QualitySettings", "streaming_mipmaps_memory_budget", 4096f, "Определяет сколько памяти выделено для потоковой загрузки текстур разного разрешения");
@@ -68,15 +69,10 @@ namespace VBQOL
             VB_GraphicPatch.grass_playerPushFade = Config.Bind("07 - QualitySettings", "grass_playerPushFade", 0.075f, "Определяет, насколько трава \"притаптывается\" или отталкивается при ходьбе игрока.");
             VB_GraphicPatch.grass_amountScale = Config.Bind("07 - QualitySettings", "grass_amountScale", 1.5f, "Насколько густо растёт трава.");
             VB_GraphicPatch.SetGraphicsSettings();
-          
+          */
             VB_CustomSlotItem.ItemSlotPairs = Config.BindConfig("08 - CustomSlot", "ItemSlotPairs",
                 "Demister,wisplight;Wishbone,wishbone;par_item_ring_25,par_item_ring;par_item_ring_50,par_item_ring;par_item_ring_75,par_item_ring;par_item_ring_100,par_item_ring",
                 "\"ItemName1,SlotName;...;ItemNameN,SlotName\"\nНесколько предметов могут быть помещены в один и тот же слот (не все сразу), но один и тот же предмет не может быть помещен в несколько слотов.\nЧтобы изменения вступили в силу, игру необходимо перезапустить.", synced: true );
-            
-            VB_FontChange.mainFontName = Config.Bind("09 - FontFix", "mainFontName", "Valheim-Norse", 
-                "Основной шрифт. Допустимые шрифты: Valheim-Norse, Valheim-Norsebold, Valheim-AveriaSansLibre, Valheim-AveriaSerifLibre, LiberationSans SDF, LiberationSans SDF - Fallback. Требуется перезапуск.");
-            VB_FontChange.secondaryFontName = Config.Bind("09 - FontFix", "secondaryFontName", "Valheim-AveriaSerifLibre", 
-                "Остальной шрифт. Допустимые шрифты: Valheim-Norse, Valheim-Norsebold, Valheim-AveriaSansLibre, Valheim-AveriaSerifLibre, LiberationSans SDF, LiberationSans SDF - Fallback. Требуется перезапуск.");
             
             CreateConfigWatcher();
             
@@ -96,7 +92,7 @@ namespace VBQOL
             configFileWatcher.OnConfigFileReloaded += () =>
             {
                 VB_FontChange.RefreshAllUIElements();
-                VB_GraphicPatch.SetGraphicsSettings();
+               // VB_GraphicPatch.SetGraphicsSettings();
             };
         }
         

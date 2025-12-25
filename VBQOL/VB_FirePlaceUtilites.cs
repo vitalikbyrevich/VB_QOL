@@ -26,7 +26,7 @@
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(Fireplace), "UpdateFireplace")]
+        [HarmonyPatch(typeof(Fireplace), nameof(Fireplace.UpdateFireplace))]
         public static void FireplaceUpdateFireplace_Patch(Fireplace __instance)
         {
             if (!__instance.m_canRefill) return;
@@ -41,16 +41,14 @@
             }
             
             if (!Mathf.Approximately(zdo.GetFloat("hiddenFuelAmount"), currentFuel)) zdo.Set("hiddenFuelAmount", currentFuel);
-            
             if (zdo.GetFloat("fuel") > __instance.m_maxFuel) zdo.Set("fuel", __instance.m_maxFuel);
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(Fireplace), "GetHoverText")]
+        [HarmonyPatch(typeof(Fireplace), nameof(Fireplace.GetHoverText))]
         public static string FireplaceGetHoverText_Patch(string __result, Fireplace __instance)
         {
-            if (!__instance || !__instance.m_canRefill) 
-                return __result;
+            if (!__instance || !__instance.m_canRefill) return __result;
 
             string keyText = keyPOCodeStringConfig.Value.ToString();
             ZDO zdo = __instance.m_nview.GetZDO();
@@ -78,7 +76,7 @@
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(Player), "Update")]
+        [HarmonyPatch(typeof(Player), nameof(Player.Update))]
         public static void PlayerUpdate_Patch(Player __instance)
         {
             if (!__instance || !Input.GetKeyUp(configPOKey) || !extinguishItemsConfig.Value) return;
