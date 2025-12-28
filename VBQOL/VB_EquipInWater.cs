@@ -7,7 +7,7 @@ public class VB_EquipInWater
 {
     internal static ConfigEntry<string> EiW_Custom;
     internal static HashSet<string> EiW_CustomStrings = new();
-
+    
     public static bool VB_CheckWaterItem(ItemDrop.ItemData item)
     {
         if (item == null)

@@ -40,7 +40,7 @@
 		    }
 	    }
 	    
-	    [HarmonyPatch(typeof(ClutterSystem), nameof(ClutterSystem.Awake))]
+	    [HarmonyPatch(typeof(ClutterSystem), nameof(ClutterSystem.LateUpdate))]
 		private static class ClutterSystem_Awake_Patch
 		{
 			private static void Prefix(ClutterSystem __instance)

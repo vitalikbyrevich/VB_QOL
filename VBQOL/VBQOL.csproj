@@ -49,7 +49,7 @@
     <Compile Include="Debuging\VB_PickableDebug.cs" />
     <Compile Include="GlobalUsings.cs" />
     <Compile Include="Helper.cs" />
-    <None Include="Network\VB_GraphicPatch.cs" />
+    <Compile Include="Network\VB_GraphicPatch.cs" />
     <None Include="0\HumanoidPatch.cs" />
     <None Include="0\VB_MobBuff.cs" />
     <None Include="0\VB_SlopeDamagePatch.cs" />
@@ -91,13 +91,13 @@
       <HintPath>..\..\..\0lib\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
-      <HintPath>..\..\..\0lib\assembly_guiutils_publicized.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\assembly_guiutils_publicized.dll</HintPath>
     </Reference>
     <Reference Include="assembly_utils">
-      <HintPath>..\..\..\0lib\assembly_utils_publicized.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\assembly_utils_publicized.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
-      <HintPath>..\..\..\0lib\assembly_valheim_publicized.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\..\..\0lib\BepInEx.dll</HintPath>

@@ -20,6 +20,19 @@
 
         internal static bool InTabDeconstruct() => !recycleButton.interactable;
 
+        public static void ForceRebuildRecycleTab()
+        {
+            if (recycleObject)
+            {
+                Object.Destroy(recycleObject);
+                recycleObject = null;
+                recycleButton = null;
+            }
+        
+            RebuildRecycleTab();
+            Debug.LogWarning("Кнопка 'Разбор' пересоздана с новой позицией: " + tabPosition.Value);
+        }
+        
         public static void RebuildRecycleTab()
         {
             if (recycleObject) return;

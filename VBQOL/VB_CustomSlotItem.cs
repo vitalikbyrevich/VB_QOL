@@ -271,12 +271,12 @@
 					{
 						GameObject gameObject = __instance.GetPrefab(itemName);
 						if (gameObject) VB_CustomSlotManager.ApplyCustomSlotItem(gameObject, slotName);
-						else Debug.LogError($"[CustomSlotItem] Prefab not found for item: {itemName}");
+						else Debug.LogWarning($"[CustomSlotItem] Prefab not found for item: {itemName}");
 					}
 				}
 				catch (Exception e)
 				{
-					Debug.LogError($"[CustomSlotItem] Error applying custom slot items: {e}");
+					Debug.LogWarning($"[CustomSlotItem] Error applying custom slot items: {e}");
 				}
 			}
 		}
