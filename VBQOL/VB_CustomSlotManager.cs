@@ -117,5 +117,45 @@
 			
 			LogDebug($"Applied custom slot '{slotName}' to {gameObject.name}");
 		}
+		
+		public static void ReapplyItemSlotPairs()
+		{
+			if (VB_CustomSlotItem.ItemSlotPairs.Value.IsNullOrWhiteSpace()) return;
+    
+			try
+			{
+				// Очистить существующие компоненты VB_CustomSlotItem
+				var allPrefabs = ZNetScene.instance?.m_prefabs;
+				if (allPrefabs != null)
+				{
+					foreach (var prefab in allPrefabs)
+					{
+						if (prefab && prefab.GetComponent<VB_CustomSlotItem>())
+						{
+							Object.Destroy(prefab.GetComponent<VB_CustomSlotItem>());
+						}
+					}
+				}
+        
+				// Применить новые настройки
+				foreach (var (itemName, slotName) in VB_CustomSlotItem.ParseItemSlotPairs(VB_CustomSlotItem.ItemSlotPairs.Value))
+				{
+					GameObject gameObject = ZNetScene.instance?.GetPrefab(itemName);
+					if (gameObject) 
+					{
+						// Удалить старый компонент если есть
+						var existing = gameObject.GetComponent<VB_CustomSlotItem>();
+						if (existing) Object.Destroy(existing);
+                
+						VB_CustomSlotManager.ApplyCustomSlotItem(gameObject, slotName);
+					}
+				}
+				Debug.Log("[CustomSlotItem] Item-slot pairs reapplied successfully");
+			}
+			catch (Exception e)
+			{
+				Debug.LogError($"[CustomSlotItem] Error reapplying item-slot pairs: {e}");
+			}
+		}
 	}
 }

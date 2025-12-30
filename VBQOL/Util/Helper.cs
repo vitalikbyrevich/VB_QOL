@@ -1,4 +1,4 @@
-namespace VBQOL;
+namespace VBQOL.Util;
 
 public enum GameServerClientState
 {
@@ -68,8 +68,14 @@ public static class Helper
         }
         catch (Exception ex)
         {
-            UnityEngine.Debug.LogError($"Ошибка проверки чит-команд: {ex.Message}");
+            Debug.LogError($"Ошибка проверки чит-команд: {ex.Message}");
             return false;
         }
+    }
+    
+    public static bool CheckIfModIsLoaded(string modGUID)
+    {
+        foreach (KeyValuePair<string, PluginInfo> keyValuePair in Chainloader.PluginInfos) if (keyValuePair.Value.Metadata.GUID.Equals(modGUID)) return true;
+        return false;
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace VBQOL
+﻿using VBQOL.Util;
+
+namespace VBQOL
 {
     [HarmonyPatch]
     public class VB_DayReset

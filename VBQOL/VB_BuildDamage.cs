@@ -1,4 +1,6 @@
-﻿namespace VBQOL
+﻿using Logger = UnityEngine.Logger;
+
+namespace VBQOL
 {
     [HarmonyPatch]
     public class VB_BuildDamage
@@ -8,7 +10,7 @@
         public static ConfigEntry<float> nonCreatorDamageMultConfig;
         public static ConfigEntry<float> uncreatedDamageMultConfig;
         public static ConfigEntry<float> naturalDamageMultConfig;
-
+        
         public static class RPC_HealthChanged_Patch
         {
             public static bool Prefix(long peer, Piece ___m_piece, WearNTear __instance) => ShouldApplyDamage(__instance, ___m_piece, peer);

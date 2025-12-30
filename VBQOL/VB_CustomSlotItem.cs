@@ -5,7 +5,6 @@
 		public string m_slotName;
 		public static ConfigEntry<string> ItemSlotPairs;
 		
-		// Обертка для безопасной работы с Traverse
 		public static class HumanoidExtensions
 		{
 			private static readonly Dictionary<string, Traverse> traverseCache = new Dictionary<string, Traverse>();
@@ -55,8 +54,7 @@
 			}
 		}
 
-		// Улучшенный парсинг конфигурации
-		private static IEnumerable<(string itemName, string slotName)> ParseItemSlotPairs(string configValue)
+		public static IEnumerable<(string itemName, string slotName)> ParseItemSlotPairs(string configValue)
 		{
 			if (string.IsNullOrWhiteSpace(configValue)) return Enumerable.Empty<(string, string)>();
 
@@ -72,7 +70,7 @@
 				}
 				catch (Exception e)
 				{
-					Debug.LogError($"[CustomSlotItem] Failed to parse item-slot pair '{pair}': {e.Message}");
+					Debug.LogWarning($"[CustomSlotItem] Failed to parse item-slot pair '{pair}': {e.Message}");
 				}
 			}
 			return results;
@@ -194,13 +192,11 @@
 			static IEnumerable<CodeInstruction> UpdateEquipmentStatusEffectsTranspiler(IEnumerable<CodeInstruction> instructionsIn)
 			{
 				List<CodeInstruction> instructions = instructionsIn.ToList();
-				if (instructions[0].opcode != OpCodes.Newobj || instructions[1].opcode != OpCodes.Stloc_0)
-					throw new Exception("CustomSlotItemLib transpiler injection point not found!");
+				if (instructions[0].opcode != OpCodes.Newobj || instructions[1].opcode != OpCodes.Stloc_0) throw new Exception("CustomSlotItemLib transpiler injection point not found!");
 
 				yield return instructions[0];
 				yield return instructions[1];
 
-				// Add GetStatusEffectsFromCustomSlotItems() results to the set
 				yield return new CodeInstruction(OpCodes.Ldloc_0);
 				yield return new CodeInstruction(OpCodes.Ldarg_0);
 				yield return CodeInstruction.Call(typeof(HumanoidPatch), nameof(HumanoidPatch.GetStatusEffectsFromCustomSlotItems));
@@ -281,7 +277,6 @@
 			}
 		}
 
-		// Периодическая очистка уничтоженных объектов
 		[HarmonyPatch(typeof(FejdStartup))]
 		public class FejdStartupPatch
 		{
@@ -289,7 +284,6 @@
 			[HarmonyPostfix]
 			static void UpdatePostfix()
 			{
-				// Очищаем каждые 60 секунд
 				if (Time.frameCount % 3600 == 0) VB_CustomSlotManager.CleanupDestroyed();
 			}
 		}

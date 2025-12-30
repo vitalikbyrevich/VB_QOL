@@ -42,13 +42,13 @@
   <ItemGroup>
     <Compile Include="AddFuel\AddFuelUtil.cs" />
     <Compile Include="AddFuel\FireplacePatch.cs" />
+    <Compile Include="Util\GlobalUsings.cs" />
+    <Compile Include="Util\Helper.cs" />
     <Compile Include="VB_WishbonePatch.cs" />
     <None Include="0\smelterfix.cs" />
     <None Include="0\VB_CheckConsoleUse.cs" />
     <Compile Include="AddFuel\SmelterPatch.cs" />
     <Compile Include="Debuging\VB_PickableDebug.cs" />
-    <Compile Include="GlobalUsings.cs" />
-    <Compile Include="Helper.cs" />
     <Compile Include="Network\VB_GraphicPatch.cs" />
     <None Include="0\HumanoidPatch.cs" />
     <None Include="0\VB_MobBuff.cs" />
