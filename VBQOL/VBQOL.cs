@@ -81,6 +81,9 @@ namespace VBQOL
 
         public void ServerConfigInit()
         {
+            LeviathanPatch.m_riseDelay = ServerConfig.BindConfig(
+                "00 - LeviathanPatch", "LP_riseDelay", 60f, "Время через сколько поднимется Левиафан в сек.", synced: true);
+            
             VB_BuildDamage.enableModBDConfig = ServerConfig.BindConfig(
                 "01 - BuildDamage", "BD_Enable_Section", true, "Включите или отключите этот раздел", synced: true);
             VB_BuildDamage.creatorDamageMultConfig = ServerConfig.BindConfig(

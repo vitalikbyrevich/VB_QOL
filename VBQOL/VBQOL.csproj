@@ -42,9 +42,12 @@
   <ItemGroup>
     <Compile Include="AddFuel\AddFuelUtil.cs" />
     <Compile Include="AddFuel\FireplacePatch.cs" />
+    <Compile Include="IndividualKeys\VB_IndividualBossKeys.cs" />
+    <Compile Include="IndividualKeys\VB_BossKeyUtils.cs" />
     <Compile Include="Util\GlobalUsings.cs" />
     <Compile Include="Util\Helper.cs" />
     <Compile Include="VB_WishbonePatch.cs" />
+    <Compile Include="LeviathanPatches.cs" />
     <None Include="0\smelterfix.cs" />
     <None Include="0\VB_CheckConsoleUse.cs" />
     <Compile Include="AddFuel\SmelterPatch.cs" />
@@ -73,6 +76,7 @@
     <Compile Include="VB_FirePlaceUtilites.cs" />
     <Compile Include="VB_BuildDamage.cs" />
     <None Include="app.config" />
+    <Compile Include="IndividualKeys\VB_HildirQuests.cs" />
     <None Include="packages.config" />
     <Compile Include="VB_BetterPickupNotifications.cs" />
     <Compile Include="VB_CustomSlotManager.cs" />
@@ -128,6 +132,9 @@
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\0lib\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>..\..\..\..\0lib\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>..\..\..\0lib\UnityEngine.AssetBundleModule.dll</HintPath>

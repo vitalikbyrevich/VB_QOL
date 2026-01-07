@@ -19,3 +19,4 @@ global using Jotunn.Entities;
 global using Jotunn.Extensions;
 global using Jotunn.Managers;
 global using Paths = BepInEx.Paths;
+global using JetBrains.Annotations;
