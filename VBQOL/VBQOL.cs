@@ -12,7 +12,7 @@ namespace VBQOL
     class VBQOL : BaseUnityPlugin
     {
         private const string ModName = "VBQOL";
-        private const string ModVersion = "0.4.5";
+        private const string ModVersion = "0.4.6";
         private const string ModGUID = "VitByr.VBQOL";
         internal static VBQOL self;
         internal static bool paradoxbuild;
@@ -81,8 +81,9 @@ namespace VBQOL
 
         public void ServerConfigInit()
         {
-            LeviathanPatch.m_riseDelay = ServerConfig.BindConfig(
-                "00 - LeviathanPatch", "LP_riseDelay", 60f, "Время через сколько поднимется Левиафан в сек.", synced: true);
+            VB_LeviathanPatch.m_resetLeviathanOn = ServerConfig.BindConfig("00 - LeviathanPatch", "LP_resetLeviathanOn", true, "Восстанавливать ли Левиафаны в Океане?", synced: true);
+            VB_LeviathanPatch.m_resetLeviathanLavaOn = ServerConfig.BindConfig("00 - LeviathanPatch", "LP_resetLeviathanLavaOn", true, "Восстанавливать ли Левиафаны в Пепельных землях?", synced: true);
+            VB_LeviathanPatch.m_riseDelay = ServerConfig.BindConfig("00 - LeviathanPatch", "LP_riseDelay", 60f, "Время через сколько поднимется Левиафан в сек.", synced: true);
             
             VB_BuildDamage.enableModBDConfig = ServerConfig.BindConfig(
                 "01 - BuildDamage", "BD_Enable_Section", true, "Включите или отключите этот раздел", synced: true);

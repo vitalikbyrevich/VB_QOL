@@ -47,7 +47,7 @@
     <Compile Include="Util\GlobalUsings.cs" />
     <Compile Include="Util\Helper.cs" />
     <Compile Include="VB_WishbonePatch.cs" />
-    <Compile Include="LeviathanPatches.cs" />
+    <Compile Include="VB_LeviathanPatches.cs" />
     <None Include="0\smelterfix.cs" />
     <None Include="0\VB_CheckConsoleUse.cs" />
     <Compile Include="AddFuel\SmelterPatch.cs" />
