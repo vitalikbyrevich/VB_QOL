@@ -1,8 +1,11 @@
-﻿namespace VBQOL
+﻿using Random = UnityEngine.Random;
+
+namespace VBQOL
 {
     [HarmonyPatch]
     public static class VB_LeviathanPatch
     {
+        private const string SurfaceKey = "VBQOL_Surface";
         private const string RisingKey = "VBQOL_Rising";
         private const string DiveStartKey = "VBQOL_DiveStart";
         private const string DiveTriggeredKey = "VBQOL_DiveTriggered";
@@ -11,20 +14,28 @@
         public static ConfigEntry<bool> m_resetLeviathanOn;
         public static ConfigEntry<bool> m_resetLeviathanLavaOn;
         public static ConfigEntry<float> m_riseDelay;
-        public static float m_diveSpeed = 2.5f;
+        public static float m_diveSpeed = 15f;
         public static float m_diveOffset = -5f;
         public static float m_diveOffsetLava = -25f;
-
-        // Запрещаем уничтожение Leviathan
-        [HarmonyPatch(typeof(ZNetView), nameof(ZNetView.Destroy))]
-        [HarmonyPrefix]
-        static bool PreventDestroy(ZNetView __instance)
+        
+        [HarmonyPatch(typeof(Leviathan), nameof(Leviathan.Awake))]
+        [HarmonyPostfix]
+        static void AwakePostfix(Leviathan __instance)
         {
-            if (__instance.GetComponent<Leviathan>()) return false;
-            return true;
+            if (!__instance.m_nview.IsValid() || !__instance.m_nview.IsOwner()) return;
+
+            bool isLava = __instance.gameObject.name.Contains("LeviathanLava");
+            var zdo = __instance.m_nview.GetZDO();
+            zdo.Set(SurfaceKey, true);
+
+            // Сохраняем высоту для лавового при первом спавне
+            if (isLava && zdo.GetFloat(OriginalHeightKey) == 0f)
+            {
+                zdo.Set(OriginalHeightKey, __instance.transform.position.y);
+                Debug.Log($"[LeviathanPatch] Сохранена высота при спавне: {__instance.transform.position.y}");
+            }
         }
 
-        // Перехватываем Leave: запускаем погружение
         [HarmonyPatch(typeof(Leviathan), nameof(Leviathan.Leave))]
         [HarmonyPrefix]
         static bool LeavePrefix(Leviathan __instance)
@@ -38,12 +49,10 @@
                 __instance.m_alignToWaterLevel = false;
 
                 float ground = ZoneSystem.instance.GetGroundHeight(__instance.transform.position);
-                float targetDepth;
-                if (isLava) targetDepth = ground + m_diveOffsetLava;
-                else targetDepth = ground + m_diveOffset;
+                float targetDepth = isLava ? ground + m_diveOffsetLava : ground + m_diveOffset;
 
                 __instance.StartCoroutine(DiveRoutine(__instance, targetDepth));
-                Debug.Log($"[LeviathanPatch] Начато погружение с {__instance.transform.position.y} до {targetDepth}");
+                Debug.Log($"[LeviathanPatch] Начато погружение с {__instance.transform.position.y:F2} до {targetDepth:F2}");
             }
             return false;
         }
@@ -53,140 +62,255 @@
         static void FixedUpdatePostfix(Leviathan __instance)
         {
             if (!__instance.m_nview.IsValid() || !__instance.m_nview.IsOwner()) return;
+            
             bool isLava = __instance.gameObject.name.Contains("LeviathanLava");
             if (isLava && !m_resetLeviathanLavaOn.Value) return;
             if (!isLava && !m_resetLeviathanOn.Value) return;
 
             var zdo = __instance.m_nview.GetZDO();
-            bool rising = zdo.GetBool(RisingKey, false);
-            long startTicks = zdo.GetLong(DiveStartKey, 0);
-            float originalHeight = __instance.transform.position.y;
-
+            bool rising = zdo.GetBool(RisingKey, true);
+            long startTicks = zdo.GetLong(DiveStartKey);
+            bool surface = zdo.GetBool(SurfaceKey, true);
+            
             // Проверка на пустышку
-            bool diveTriggered = zdo.GetBool(DiveTriggeredKey, false);
-
-            if (startTicks == 0 && !rising && !diveTriggered && IsMineRockEmpty(__instance.m_mineRock))
+            if (surface && IsMineRockEmpty(__instance.m_mineRock))
             {
-                if (isLava)
-                {
-                    zdo.Set(OriginalHeightKey, originalHeight);
-                    Debug.Log($"[LeviathanPatch] Сохранена высота: {originalHeight}, ZDO записано: {zdo.GetFloat(OriginalHeightKey)}");
-                }
-
-                zdo.Set("VBQOL_MineRockActive", false);
-                zdo.Set(DiveTriggeredKey, true); // помечаем, что уже обработали
-                __instance.m_alignToWaterLevel = false;
-
-                float ground = ZoneSystem.instance.GetGroundHeight(__instance.transform.position);
-                float targetDepth;
-                if (isLava) targetDepth = ground + m_diveOffsetLava;
-                else targetDepth = ground + m_diveOffset;
-                __instance.StartCoroutine(DiveRoutine(__instance, targetDepth));
-
-                Debug.Log("[LeviathanPatch] Обнаружен пустой Leviathan → запускаем погружение");
+                StartDiving(__instance, isLava);
                 return;
             }
 
-            // Проверка таймера
+            // Проверка таймера на всплытие
             if (startTicks > 0 && !rising)
             {
                 double elapsed = (ZNet.instance.GetTime() - new DateTime(startTicks)).TotalSeconds;
                 if (elapsed >= m_riseDelay.Value)
                 {
-                    // СРАЗУ сбрасываем таймер, чтобы не вызывать снова
-                    zdo.Set(DiveStartKey, 0);
-                    zdo.Set(RisingKey, true);
-
-                    Debug.Log("[LeviathanPatch] Таймер завершён, восстанавливаем MineRock");
-                    RestoreMineRock(__instance.m_mineRock);
-
-                    __instance.StartCoroutine(RiseRoutine(__instance, isLava));
-
-                    if (!isLava) __instance.m_alignToWaterLevel = true;
-
-                    zdo.Set(DiveTriggeredKey, false);
+                    StartRising(__instance, isLava);
                 }
             }
         }
 
-        // Плавное погружение
-        private static IEnumerator DiveRoutine(Leviathan leviathan, float targetDepth)
+        private static void StartDiving(Leviathan leviathan, bool isLava)
+        {
+            var zdo = leviathan.m_nview.GetZDO();
+
+            if (isLava && zdo.GetFloat(OriginalHeightKey) == 0f)
+            {
+                zdo.Set(OriginalHeightKey, leviathan.transform.position.y);
+                Debug.Log($"[LeviathanPatch] Сохранена высота: {leviathan.transform.position.y:F2}");
+            }
+
+            zdo.Set(SurfaceKey, false);
+            zdo.Set(DiveTriggeredKey, true);
+            leviathan.m_alignToWaterLevel = false;
+
+            float ground = ZoneSystem.instance.GetGroundHeight(leviathan.transform.position);
+            float targetDepth = isLava ? ground + m_diveOffsetLava : ground + m_diveOffset;
+
+            Debug.Log("[LeviathanPatch] Начинаем погружение");
+            leviathan.StartCoroutine(DiveRoutine(leviathan, targetDepth, isLava));
+        }
+
+        private static IEnumerator DiveRoutine(Leviathan leviathan, float targetDepth, bool isLava = false)
         {
             long ticks = ZNet.instance.GetTime().Ticks;
             leviathan.m_nview.GetZDO().Set(DiveStartKey, ticks);
             leviathan.m_nview.GetZDO().Set(RisingKey, false);
-            while (leviathan.transform.position.y > targetDepth)
+            
+            Debug.Log($"[LeviathanPatch] Таймер {m_riseDelay.Value} сек стартовал");
+
+            // Для лавового левиафана - спавним платформы при старте погружения
+            if (isLava)
+            {
+                SpawnLavaPlatforms(leviathan);
+            }
+
+            while (leviathan.transform.position.y > targetDepth + 0.1f)
             {
                 leviathan.m_body.MovePosition(leviathan.transform.position + Vector3.down * (Time.deltaTime * m_diveSpeed));
                 yield return null;
             }
-
-            Debug.Log($"[LeviathanPatch] Погружение завершено, таймер {m_riseDelay.Value} сек стартовал");
         }
 
-        // Обновляем RiseRoutine
-        private static IEnumerator RiseRoutine(Leviathan leviathan, bool isLava = false)
+        private static void SpawnLavaPlatforms(Leviathan leviathan)
         {
-            float targetHeight;
+            GameObject platformPrefab = ZNetScene.instance.GetPrefab("lavabomb_rock1");
+            if (!platformPrefab)
+            {
+                Debug.LogWarning("[LeviathanPatch] Не удалось загрузить lavabomb_rock1");
+                return;
+            }
 
+            Vector3 centerPos = leviathan.transform.position;
+            
+            // Исходная позиция + платформы на расстоянии 3м по сторонам
+            SpawnPlatform(platformPrefab, centerPos);
+            SpawnPlatform(platformPrefab, centerPos + new Vector3(3.3f, 0f, 0f));
+            SpawnPlatform(platformPrefab, centerPos + new Vector3(-3.3f, 0f, 0f));
+            SpawnPlatform(platformPrefab, centerPos + new Vector3(0f, 0f, 3.3f));
+            SpawnPlatform(platformPrefab, centerPos + new Vector3(0f, 0f, -3.3f));
+            
+            // Добавим ещё 4 диагональных для лучшего покрытия
+            SpawnPlatform(platformPrefab, centerPos + new Vector3(3.3f, 0f, 3.3f));
+            SpawnPlatform(platformPrefab, centerPos + new Vector3(-3.3f, 0f, 3.3f));
+            SpawnPlatform(platformPrefab, centerPos + new Vector3(3.3f, 0f, -3.3f));
+            SpawnPlatform(platformPrefab, centerPos + new Vector3(-3.3f, 0f, -3.3f));
+            
+            Debug.Log("[LeviathanPatch] Создано 9 платформ из lavabomb_rock1");
+        }
+
+        private static void SpawnPlatform(GameObject prefab, Vector3 position)
+        {
+            // Немного приподнимаем над поверхностью
+            position.y += 0.5f;
+            
+            // Случайное вращение для естественности
+            Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            Object.Instantiate(prefab, position, rotation);
+        }
+
+        private static void StartRising(Leviathan leviathan, bool isLava)
+        {
+            var zdo = leviathan.m_nview.GetZDO();
+
+            // Сбрасываем таймер
+            zdo.Set(DiveStartKey, 0);
+            zdo.Set(RisingKey, true);
+
+            Debug.Log("[LeviathanPatch] Таймер завершён, восстанавливаем MineRock");
+
+            // Восстанавливаем руду
+            if (leviathan.m_mineRock)
+            {
+                RestoreMineRock(leviathan.m_mineRock);
+            }
+
+            // Начинаем всплытие
+            leviathan.StartCoroutine(RiseRoutine(leviathan, isLava));
+
+            if (!isLava) leviathan.m_alignToWaterLevel = true;
+        }
+
+        private static IEnumerator RiseRoutine(Leviathan leviathan, bool isLava)
+        {
+            float targetHeight = isLava 
+                ? leviathan.m_nview.GetZDO().GetFloat(OriginalHeightKey, leviathan.transform.position.y)
+                : Floating.GetLiquidLevel(leviathan.transform.position, leviathan.m_waveScale);
+
+            Debug.Log($"[LeviathanPatch] Всплываем до {(isLava ? "сохранённой" : "уровня воды")} высоты: {targetHeight:F2}");
+            
+            var zdo = leviathan.m_nview.GetZDO();
+            zdo.Set(SurfaceKey, true);
+
+            // Загружаем префаб эффекта для лавового левиафана
+            GameObject lavaSplashPrefab = null;
             if (isLava)
             {
-                // Получаем сохраненную высоту из ZDO
-                var zdo = leviathan.m_nview.GetZDO();
-                float originalHeight = zdo.GetFloat(OriginalHeightKey);
-                targetHeight = originalHeight;
-                Debug.Log($"[LeviathanPatch] Восстанавливаем на сохраненную высоту: {targetHeight}");
-            }
-            else
-            {
-                // Обычный Левиафан - уровень воды
-                targetHeight = Floating.GetLiquidLevel(leviathan.transform.position, leviathan.m_waveScale);
-                Debug.Log($"[LeviathanPatch] Обычный Левиафан всплывает до уровня воды: {targetHeight}");
+                lavaSplashPrefab = ZNetScene.instance.GetPrefab("vfx_BombBlob_explode_lava");
+                if (!lavaSplashPrefab)
+                {
+                    Debug.LogWarning("[LeviathanPatch] Не удалось загрузить vfx_BombBlob_explode_lava");
+                }
             }
 
-            // Поднимаем пока не достигнем цели
-            while (leviathan.transform.position.y < targetHeight) // -0.1f для допуска
+            // Сохраняем начальную позицию для эффектов
+            Vector3 startPos = leviathan.transform.position;
+
+            while (leviathan.transform.position.y < targetHeight - 0.1f)
             {
-                leviathan.m_body.MovePosition(leviathan.transform.position + Vector3.up * (Time.deltaTime * 1.5f)); // Быстрее поднимаем
+                leviathan.m_body.MovePosition(leviathan.transform.position + Vector3.up * (Time.deltaTime * m_diveSpeed));
+                
+                // Эффекты в процессе подъема (каждые 2 метра)
+                if (isLava && lavaSplashPrefab && leviathan.transform.position.y % 2f < 0.1f)
+                {
+                    Vector3 splashPos = new Vector3(startPos.x, targetHeight, startPos.z);
+                    Object.Instantiate(lavaSplashPrefab, splashPos, Quaternion.identity);
+                }
+                
                 yield return null;
             }
 
-            Debug.Log($"[LeviathanPatch] Всплытие завершено. Финальная высота: {leviathan.transform.position.y}, целевая была: {targetHeight}");
+            // Финальный эффект на исходной высоте (поверхность лавы)
+            if (isLava && lavaSplashPrefab)
+            {
+                // Спавним эффекты прямо на исходной позиции
+                Vector3 finalPos = new Vector3(startPos.x, targetHeight, startPos.z);
+                
+                // Несколько эффектов для красоты
+                Object.Instantiate(lavaSplashPrefab, finalPos, Quaternion.identity);
+                Object.Instantiate(lavaSplashPrefab, finalPos + new Vector3(2.5f, 0f, 2.5f), Quaternion.identity);
+                Object.Instantiate(lavaSplashPrefab, finalPos + new Vector3(-2.5f, 0f, -2.5f), Quaternion.identity);
+                Object.Instantiate(lavaSplashPrefab, finalPos + new Vector3(2.5f, 0f, -2.5f), Quaternion.identity);
+                Object.Instantiate(lavaSplashPrefab, finalPos + new Vector3(-2.5f, 0f, 2.5f), Quaternion.identity);
+                
+                Debug.Log($"[LeviathanPatch] Создан эффект vfx_BombBlob_explode_lava на высоте {targetHeight:F2}");
+            }
+
+            Debug.Log($"[LeviathanPatch] Всплытие завершено на высоте {leviathan.transform.position.y:F2}");
         }
 
-        // Восстановление хитина
         private static void RestoreMineRock(MineRock mineRock)
         {
             if (mineRock?.m_nview?.GetZDO() == null) return;
 
-            for (int i = 0; i < mineRock.m_hitAreas.Length; i++)
-            {
-                string key = "Health" + i;
-                mineRock.m_nview.GetZDO().Set(key, mineRock.GetHealth());
-                if (mineRock.m_hitAreas[i]) mineRock.m_hitAreas[i].gameObject.SetActive(true);
-            }
+            var zdo = mineRock.m_nview.GetZDO();
+            float maxHealth = mineRock.GetHealth();
+
+            // Восстанавливаем здоровье
+            for (int i = 0; i < mineRock.m_hitAreas.Length; i++) zdo.Set("Health" + i, maxHealth);
+
+            // Активируем зоны
+            foreach (var area in mineRock.m_hitAreas) 
+                if (area) area.gameObject.SetActive(true);
 
             if (mineRock.m_baseModel) mineRock.m_baseModel.SetActive(true);
 
-            // Сохраняем состояние
-            mineRock.m_nview.GetZDO().Set("VBQOL_MineRockActive", true);
+            // И только теперь обновляем визуализацию
+            mineRock.UpdateVisability();
 
-            Debug.Log("[LeviathanPatch] MineRock восстановлен и состояние сохранено");
+            Debug.Log("[LeviathanPatch] MineRock восстановлен корректно");
         }
+
 
         private static bool IsMineRockEmpty(MineRock mineRock)
         {
-            if (!mineRock || mineRock.m_hitAreas == null || mineRock.m_hitAreas.Length == 0) return true;
+            if (!mineRock) return true;
 
-            // Если ни одна зона удара не активна — считаем пустышкой
-            int active = 0;
-            for (int i = 0; i < mineRock.m_hitAreas.Length; i++)
+            var zdo = mineRock.m_nview?.GetZDO();
+            if (zdo == null) return true;
+
+            // Проверяем здоровье в ZDO
+            for (int i = 0; i < 20; i++) 
+                if (zdo.GetFloat("Health" + i) > 0f) return false;
+
+            // Если в ZDO ничего нет, проверяем активные зоны
+            if (mineRock.m_hitAreas != null)
             {
-                var ha = mineRock.m_hitAreas[i];
-                if (ha && ha.gameObject.activeSelf) active++;
+                foreach (var area in mineRock.m_hitAreas)
+                    if (area && area.gameObject.activeSelf) return false;
             }
+            return true;
+        }
 
-            return active == 0;
+        [HarmonyPatch(typeof(ZNetView), nameof(ZNetView.Destroy))]
+        [HarmonyPrefix]
+        static bool PreventDestroy(ZNetView __instance)
+        {
+            if (__instance.GetComponent<Leviathan>()) return false;
+            return true;
+        }
+
+        // Патч для предотвращения удаления MineRock у Левиафанов
+        [HarmonyPatch(typeof(MineRock), nameof(MineRock.AllDestroyed))]
+        [HarmonyPrefix]
+        static bool AllDestroyedPrefix(MineRock __instance, ref bool __result)
+        {
+            if (__instance.GetComponentInParent<Leviathan>())
+            {
+                __result = false;
+                return false;
+            }
+            return true;
         }
     }
 }

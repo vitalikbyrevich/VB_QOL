@@ -1,0 +1,18 @@
+categories:
+- Ресурсы:Material
+- Еда:Consumable
+- Одноручное:OneHandedWeapon,Hands,Torch
+- Луки:Bow
+- Щиты:Shield
+- Шлемы:Helmet
+- Торс:Chest
+- Стрелы:Ammo,AmmoNonEquipable
+- Брюлики:Customization
+- Ноги:Legs
+- Трофеи:Trophy
+- Двуручное:TwoHandedWeapon,Attach_Atgeir,TwoHandedWeaponLeft
+- Прочее:Misc
+- Плащи:Shoulder
+- Инструменты:Tool
+- Рыба:Fish
+- Амулеты:Trinket,Utility

@@ -42,12 +42,17 @@
   <ItemGroup>
     <Compile Include="AddFuel\AddFuelUtil.cs" />
     <Compile Include="AddFuel\FireplacePatch.cs" />
+    <Compile Include="VB_CraftingFilter.cs" />
     <Compile Include="IndividualKeys\VB_IndividualBossKeys.cs" />
     <Compile Include="IndividualKeys\VB_BossKeyUtils.cs" />
+    <None Include="0\MobManager.cs" />
+    <None Include="0\MonsterSleepController.cs" />
+    <Compile Include="NoIntroNoValkyrie.cs" />
     <Compile Include="Util\GlobalUsings.cs" />
     <Compile Include="Util\Helper.cs" />
     <Compile Include="VB_WishbonePatch.cs" />
     <Compile Include="VB_LeviathanPatches.cs" />
+    <None Include="0\Patch_Mining_HandleMining.cs" />
     <None Include="0\smelterfix.cs" />
     <None Include="0\VB_CheckConsoleUse.cs" />
     <Compile Include="AddFuel\SmelterPatch.cs" />
@@ -92,7 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\0lib\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>..\..\..\..\0lib\assembly_guiutils_publicized.dll</HintPath>
@@ -104,65 +109,76 @@
       <HintPath>..\..\..\..\0lib\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\0lib\BepInEx.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="com.rlabrecque.steamworks.net">
-      <HintPath>..\..\..\0lib\com.rlabrecque.steamworks.net.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\com.rlabrecque.steamworks.net.dll</HintPath>
     </Reference>
     <Reference Include="gui_framework">
-      <HintPath>..\..\..\0lib\gui_framework.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\gui_framework.dll</HintPath>
     </Reference>
     <Reference Include="Jotunn">
-      <HintPath>..\..\..\0lib\Jotunn.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\Jotunn.dll</HintPath>
+    </Reference>
+    <Reference Include="Mining">
+      <HintPath>D:\Games\Paradox\BepInEx\plugins\Blaxxun\Mining.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>..\..\..\0lib\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="Splatform">
-      <HintPath>..\..\..\0lib\Splatform.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\Splatform.dll</HintPath>
     </Reference>
     <Reference Include="Splatform.Steam">
-      <HintPath>..\..\..\0lib\Splatform.Steam.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\Splatform.Steam.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <HintPath>..\..\..\0lib\System.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>..\..\..\..\0lib\Unity.InputSystem.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\..\0lib\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\0lib\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule">
       <HintPath>..\..\..\..\0lib\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>..\..\..\0lib\UnityEngine.AssetBundleModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ClothModule">
-      <HintPath>..\..\..\0lib\UnityEngine.ClothModule.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\0lib\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>..\..\..\0lib\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputModule">
-      <HintPath>..\..\..\0lib\UnityEngine.InputModule.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\UnityEngine.InputModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\..\..\0lib\UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\..\..\0lib\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\0lib\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>..\..\..\0lib\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>..\..\..\..\0lib\UnityEngine.UIModule.dll</HintPath>
     </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>..\..\VBParadox Jotunn\paradox\Libs\YamlDotNet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Asset\categories.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Content Include="YamlDotNet.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
