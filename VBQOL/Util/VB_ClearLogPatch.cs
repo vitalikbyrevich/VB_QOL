@@ -1,4 +1,4 @@
-﻿namespace VBQOL
+﻿namespace VBQOL.Util
 {
 	[HarmonyPatch]
     public class VB_ClearLogPatch

@@ -14,7 +14,7 @@ namespace VBQOL
         public static ConfigEntry<bool> m_resetLeviathanOn;
         public static ConfigEntry<bool> m_resetLeviathanLavaOn;
         public static ConfigEntry<float> m_riseDelay;
-        public static float m_diveSpeed = 15f;
+        public static float m_diveSpeed = 10f;
         public static float m_diveOffset = -5f;
         public static float m_diveOffsetLava = -25f;
         
@@ -28,7 +28,6 @@ namespace VBQOL
             var zdo = __instance.m_nview.GetZDO();
             zdo.Set(SurfaceKey, true);
 
-            // Сохраняем высоту для лавового при первом спавне
             if (isLava && zdo.GetFloat(OriginalHeightKey) == 0f)
             {
                 zdo.Set(OriginalHeightKey, __instance.transform.position.y);
@@ -72,14 +71,12 @@ namespace VBQOL
             long startTicks = zdo.GetLong(DiveStartKey);
             bool surface = zdo.GetBool(SurfaceKey, true);
             
-            // Проверка на пустышку
             if (surface && IsMineRockEmpty(__instance.m_mineRock))
             {
                 StartDiving(__instance, isLava);
                 return;
             }
 
-            // Проверка таймера на всплытие
             if (startTicks > 0 && !rising)
             {
                 double elapsed = (ZNet.instance.GetTime() - new DateTime(startTicks)).TotalSeconds;

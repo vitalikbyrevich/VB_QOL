@@ -1,4 +1,4 @@
-﻿namespace VBQOL.Network
+﻿namespace VBQOL.Quality
 {
 	[HarmonyPatch]
     public class VB_GraphicPatch

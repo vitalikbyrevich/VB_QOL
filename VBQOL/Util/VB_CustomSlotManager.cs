@@ -1,4 +1,4 @@
-﻿namespace VBQOL
+﻿namespace VBQOL.Util
 {
 	public static class VB_CustomSlotManager
 	{

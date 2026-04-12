@@ -42,12 +42,15 @@
   <ItemGroup>
     <Compile Include="AddFuel\AddFuelUtil.cs" />
     <Compile Include="AddFuel\FireplacePatch.cs" />
+    <Compile Include="Util\VB_ClearLogPatch.cs" />
+    <Compile Include="Util\VB_CustomSlotManager.cs" />
+    <Compile Include="Util\VB_DayReset.cs" />
     <Compile Include="VB_CraftingFilter.cs" />
     <Compile Include="IndividualKeys\VB_IndividualBossKeys.cs" />
     <Compile Include="IndividualKeys\VB_BossKeyUtils.cs" />
     <None Include="0\MobManager.cs" />
     <None Include="0\MonsterSleepController.cs" />
-    <Compile Include="NoIntroNoValkyrie.cs" />
+    <Compile Include="VB_NoIntroNoValkyrie.cs" />
     <Compile Include="Util\GlobalUsings.cs" />
     <Compile Include="Util\Helper.cs" />
     <Compile Include="VB_WishbonePatch.cs" />
@@ -57,13 +60,12 @@
     <None Include="0\VB_CheckConsoleUse.cs" />
     <Compile Include="AddFuel\SmelterPatch.cs" />
     <Compile Include="Debuging\VB_PickableDebug.cs" />
-    <Compile Include="Network\VB_GraphicPatch.cs" />
+    <Compile Include="Quality\VB_GraphicPatch.cs" />
     <None Include="0\HumanoidPatch.cs" />
     <None Include="0\VB_MobBuff.cs" />
     <None Include="0\VB_SlopeDamagePatch.cs" />
     <Compile Include="Recycle\InventoryGuiPatch.cs" />
     <Compile Include="Recycle\RecycleUtil.cs" />
-    <Compile Include="VB_DayReset.cs" />
     <Compile Include="VB_EquipInWater.cs" />
     <Compile Include="VB_FontChange.cs" />
     <Compile Include="VB_WardPatch.cs" />
@@ -71,7 +73,6 @@
     <Compile Include="VB_CraftingStationLevelRange.cs" />
     <Compile Include="VB_DayCycle.cs" />
     <Compile Include="VB_Swampkey.cs" />
-    <Compile Include="VB_ClearLogPatch.cs" />
     <Compile Include="VB_FeedFromHandPatch.cs" />
     <Compile Include="VB_SnakeCameraPatch.cs" />
     <Compile Include="VB_BlastFurnaceTalesAll.cs" />
@@ -84,7 +85,6 @@
     <Compile Include="IndividualKeys\VB_HildirQuests.cs" />
     <None Include="packages.config" />
     <Compile Include="VB_BetterPickupNotifications.cs" />
-    <Compile Include="VB_CustomSlotManager.cs" />
     <Compile Include="VB_CustomSlotItem.cs" />
     <Compile Include="VBQOL.cs" />
   </ItemGroup>

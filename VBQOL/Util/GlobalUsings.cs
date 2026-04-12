@@ -20,3 +20,8 @@ global using Jotunn.Extensions;
 global using Jotunn.Managers;
 global using Paths = BepInEx.Paths;
 global using JetBrains.Annotations;
+global using VBQOL.AddFuel;
+global using VBQOL.IndividualKeys;
+global using VBQOL.Quality;
+global using VBQOL.Recycle;
+global using VBQOL.Util;

@@ -1,8 +1,3 @@
-using VBQOL.AddFuel;
-using VBQOL.Network;
-using VBQOL.Recycle;
-using VBQOL.Util;
-
 namespace VBQOL
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
@@ -12,7 +7,7 @@ namespace VBQOL
     class VBQOL : BaseUnityPlugin
     {
         private const string ModName = "VBQOL";
-        private const string ModVersion = "0.4.8";
+        private const string ModVersion = "0.4.9";
         private const string ModGUID = "VitByr.VBQOL";
         internal static VBQOL self;
         internal static bool paradoxbuild;
@@ -36,18 +31,13 @@ namespace VBQOL
 
             CreateConfigWatcher();
 
-            /* if (Chainloader.PluginInfos.ContainsKey("org.bepinex.plugins.mining"))
-             {
-                 Harmony.CreateAndPatchAll(typeof(Patch_MineRock_LeviathanExplosion));
-                 Debug.Log("[LeviathanPatch] Mining mod patched to use vanilla explosion mechanics");
-             }*/ 
             Harmony.CreateAndPatchAll(typeof(VB_LeviathanPatch));
+            Harmony.CreateAndPatchAll(typeof(VB_IndividualBossKeys));
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), ModGUID);
         }
 
         private void Start()
         {
-            StartCoroutine(WaitForLocalPlayer());
             StartCoroutine(WaitForInventoryGui());
         }
 
@@ -64,7 +54,7 @@ namespace VBQOL
 
             VB_FirePlaceUtilites.extinguishItemsConfig = Config.Bind("03 - EnableFire", "EF_Enable", true, "Вкл/Выкл секцию");
             VB_FirePlaceUtilites.extinguishStringConfig = Config.Bind("03 - EnableFire", "EF_Extinguish_Fire_Text", "Тушить огонь", "Текст отображаемый при наведении курсора на огонь");
-            VB_FirePlaceUtilites.igniteStringConfig = Config.Bind("03 - EnableFire", "EF_Ignite_Fire_Text", "Разжечь огонь", "Текст, отображаемый при наведении курсора на огонь, если тот потушен");
+            VB_FirePlaceUtilites.igniteStringConfig = Config.Bind("03 - EnableFire", "EF_Ignite_Fire_Text", "Огонь потушен", "Текст, отображаемый при тушении огня");
             VB_FirePlaceUtilites.keyPOCodeStringConfig = Config.Bind("03 - EnableFire", "EF_Put_Out_Fire_Key", KeyCode.LeftAlt, "Клавиша чтобы потушить огонь.");
             VB_FirePlaceUtilites.configPOKey = (KeyCode)Enum.Parse(typeof(KeyCode), VB_FirePlaceUtilites.keyPOCodeStringConfig.Value.ToString());
 
@@ -114,7 +104,7 @@ namespace VBQOL
             VB_EquipInWater.EiW_CustomStrings = [.. VB_EquipInWater.EiW_Custom.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)];
 
             RecycleUtil.resourceMultiplier = ServerConfig.BindConfig("03 - Recycle", "R_ResourceMultiplier", 0.35f,
-                "Количество ресурсов, возвращаемых в результате разбора (от 0 до 1, где 1 возвращает 100% ресурсов, а 0 - 0%)", acceptableValues: new AcceptableValueRange<float>(0f, 1f), synced: true);
+                "Количество ресурсов, возвращаемых в результате разбора (от 0 до 1, где 1 возвращает 100% ресурсов, а 0 - 0%)", synced: true);
             RecycleUtil.preserveOriginalItem = ServerConfig.BindConfig(
                 "03 - Recycle", "R_PreserveOriginalItem", true,
                 "Сохранять ли данные оригинального предмета при понижении уровня. Полезно для модов, добавляющих дополнительные свойства к предметам, например EpicLoot.\nОтключите, если возникли проблемы.",
@@ -125,21 +115,7 @@ namespace VBQOL
                 "\"ItemName1,SlotName;...;ItemNameN,SlotName\"\nНесколько предметов могут быть помещены в один и тот же слот (не все сразу), но один и тот же предмет не может быть помещен в несколько слотов.\nЧтобы изменения вступили в силу, игру необходимо перезапустить.",
                 synced: true);
 
-            NoIntroNoValkyrie.m_enableNINV = ServerConfig.BindConfig("05 - NoIntroNoValkyrie", "NINV_Enable", true, "Полностью отключить начальные титры и полет в когтях Валькирии", synced: true);
-        }
-
-        private IEnumerator WaitForLocalPlayer()
-        {
-            while (!Player.m_localPlayer) yield return null;
-
-            Logger.LogInfo("Локальный игрок найден - клиент подключен");
-
-            if (!ZNet.instance.IsServer()) ServerConfig.Reload();
-            else
-            {
-                ServerConfig.Reload();
-                Logger.LogInfo("Сервер запущен, админ-конфиг загружен");
-            }
+            VB_NoIntroNoValkyrie.m_enableNINV = ServerConfig.BindConfig("05 - NoIntroNoValkyrie", "NINV_Enable", true, "Полностью отключить начальные титры и полет в когтях Валькирии", synced: true);
         }
 
         private IEnumerator WaitForInventoryGui()
@@ -172,8 +148,7 @@ namespace VBQOL
                 VB_CustomSlotItem.ItemSlotPairs.Value = pkg.ReadString();
 
                 VB_CustomSlotManager.ReapplyItemSlotPairs();
-                VB_EquipInWater.EiW_CustomStrings = new HashSet<string>(
-                    VB_EquipInWater.EiW_Custom.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                VB_EquipInWater.EiW_CustomStrings = new HashSet<string>(VB_EquipInWater.EiW_Custom.Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
 
                 Debug.Log("[VBQOL] Config applied successfully");
             }
@@ -207,7 +182,7 @@ namespace VBQOL
             return pkg;
         }
 
-        public static readonly WaitForSeconds OneSecondWait = new WaitForSeconds(1f);
+    //    public static readonly WaitForSeconds OneSecondWait = new WaitForSeconds(1f);
 
         private IEnumerator OnAdminConfigSync(long sender, ZPackage pkg)
         {
@@ -240,7 +215,7 @@ namespace VBQOL
             yield break;
         }
 
-        public static readonly WaitForSeconds HalfSecondWait = new WaitForSeconds(0.5f);
+     //   public static readonly WaitForSeconds HalfSecondWait = new WaitForSeconds(0.5f);
 
         private void CreateConfigWatcher()
         {

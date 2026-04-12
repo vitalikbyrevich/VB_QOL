@@ -1,7 +1,7 @@
 ﻿namespace VBQOL
 {
     [HarmonyPatch]
-    public static class NoIntroNoValkyrie
+    public static class VB_NoIntroNoValkyrie
     {
         public static ConfigEntry<bool> m_enableNINV;
     
