@@ -14,7 +14,7 @@ namespace VBQOL
         public static ConfigEntry<bool> m_resetLeviathanOn;
         public static ConfigEntry<bool> m_resetLeviathanLavaOn;
         public static ConfigEntry<float> m_riseDelay;
-        public static float m_diveSpeed = 10f;
+        public static float m_diveSpeed = 2.5f;
         public static float m_diveOffset = -5f;
         public static float m_diveOffsetLava = -25f;
         

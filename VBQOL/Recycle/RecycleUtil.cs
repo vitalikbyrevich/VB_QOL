@@ -87,6 +87,12 @@
 
         internal static void DoRecycle(Player player, InventoryGui gui)
         {
+            if (gui.m_craftTimer >= 0f)
+            {
+                player.Message(MessageHud.MessageType.Center, "Нельзя разобрать во время крафта!");
+                return;
+            }
+            
             if (gui.m_craftRecipe is null) return;
 
             int quality = gui.m_craftUpgradeItem?.m_quality - 1 ?? 0;

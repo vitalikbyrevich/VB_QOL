@@ -4,7 +4,7 @@
     static class FireplacePatch
     {
         [HarmonyPrefix]
-        [HarmonyPatch("Interact")]
+        [HarmonyPatch(nameof(Fireplace.Interact))]
         public static bool FireplaceInteractPrefix(ref Fireplace __instance, Humanoid user, bool hold, bool alt, ref bool __result)
         {
             if (!AddFuelUtil.AFEnable.Value) return true;
@@ -45,7 +45,7 @@
             return false;
         }
 
-        [HarmonyPatch(typeof(Fireplace), "GetHoverText")]
+        [HarmonyPatch(typeof(Fireplace), nameof(Fireplace.GetHoverText))]
         [HarmonyPostfix]
         public static string AddFuel_FirePlaceGetHoverText_Patch(string __result, Fireplace __instance)
         {
