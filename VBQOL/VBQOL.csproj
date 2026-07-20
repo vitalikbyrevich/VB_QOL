@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddFuel\AddFuelUtil.cs" />
+    <None Include="0\VB_EquipInWater.cs" />
     <None Include="AddFuel\FireplacePatch.cs" />
     <Compile Include="Util\VB_ClearLogPatch.cs" />
     <Compile Include="Util\VB_CustomSlotManager.cs" />
@@ -67,7 +68,6 @@
     <None Include="0\VB_SlopeDamagePatch.cs" />
     <Compile Include="Recycle\InventoryGuiPatch.cs" />
     <Compile Include="Recycle\RecycleUtil.cs" />
-    <None Include="VB_EquipInWater.cs" />
     <Compile Include="VB_FontChange.cs" />
     <Compile Include="VB_WardPatch.cs" />
     <Compile Include="VB_AshLandsFix.cs" />

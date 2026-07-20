@@ -7,7 +7,7 @@ namespace VBQOL
     class VBQOL : BaseUnityPlugin
     {
         private const string ModName = "VBQOL";
-        private const string ModVersion = "0.5.3";
+        private const string ModVersion = "0.5.5";
         private const string ModGUID = "VitByr.VBQOL";
         internal static VBQOL self;
         internal static bool paradoxbuild;
@@ -92,12 +92,15 @@ namespace VBQOL
 
             VB_CustomSlotItem.ItemSlotPairs = ServerConfig.BindConfig("04 - CustomSlot", "ItemSlotPairs",
                 "Demister,wisplight;Wishbone,wishbone;par_item_ring_25,par_item_ring;par_item_ring_50,par_item_ring;par_item_ring_75,par_item_ring;par_item_ring_100,par_item_ring",
-                "\"ItemName1,SlotName;...;ItemNameN,SlotName\"\nНесколько предметов могут быть помещены в один и тот же слот (не все сразу), но один и тот же предмет не может быть помещен в несколько слотов.\nЧтобы изменения вступили в силу, игру необходимо перезапустить.",
-                synced: true);
+                "\"ItemName1,SlotName;...;ItemNameN,SlotName\"\nНесколько предметов могут быть помещены в один и тот же слот (не все сразу), но один и тот же предмет не может быть помещен в несколько слотов.\nЧтобы изменения вступили в силу, игру необходимо перезапустить.", synced: true);
 
             VB_NoIntroNoValkyrie.m_enableNINV = ServerConfig.BindConfig("05 - NoIntroNoValkyrie", "NINV_Enable", true, "Полностью отключить начальные титры и полет в когтях Валькирии", synced: true);
 
             VB_FallDamage.MaxFallDamage = ServerConfig.BindConfig("06 - Fall Damage", "MF_Damage", 0f, "Максимальный урон от падения (vanilla = 100). Значение 0 - безлимит", synced: true);
+            VB_FallDamage.ExcludedPrefabs = ServerConfig.BindConfig("06 - Fall Damage", "MF_ExcludedPrefabs", "Blob,BlobElite,BlobTar,BlobLava,Tick", "Префабы мобов, которые НЕ получают урон от падения. Указывать через запятую.", synced: true);
+            
+            VB_SwampKeyUse.enable = ServerConfig.BindConfig("07 - SwampKeyUse", "SKU_Enable", true, "Включить поломку Болотного ключа при открытии Затонувших крипт", synced: true);
+            VB_SwampKeyUse.m_chancebroken = ServerConfig.BindConfig("07 - SwampKeyUse", "SKU_Chance", 33f, "Шанс на поломку ключа при использовании", synced: true);
         }
 
         private IEnumerator WaitForInventoryGui()
@@ -136,6 +139,11 @@ namespace VBQOL
                 VB_CustomSlotManager.ReapplyItemSlotPairs();
 
                 VB_FallDamage.MaxFallDamage.Value = pkg.ReadSingle();
+                VB_FallDamage.ExcludedPrefabs.Value = pkg.ReadString();
+                VB_FallDamage.ForceUpdateCache();
+                
+                VB_SwampKeyUse.enable.Value = pkg.ReadBool();
+                VB_SwampKeyUse.m_chancebroken.Value = pkg.ReadSingle();
                 
                 Debug.Log("[VBQOL] Config applied successfully");
             }
@@ -166,6 +174,10 @@ namespace VBQOL
                 pkg.Write(VB_CustomSlotItem.ItemSlotPairs.Value ?? "");
 
                 pkg.Write(VB_FallDamage.MaxFallDamage.Value);
+                pkg.Write(VB_FallDamage.ExcludedPrefabs.Value ?? "");
+
+                pkg.Write(VB_SwampKeyUse.enable.Value);
+                pkg.Write(VB_SwampKeyUse.m_chancebroken.Value);
             }
             catch (Exception e)
             {

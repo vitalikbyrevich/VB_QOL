@@ -12,6 +12,19 @@
         [HarmonyPatch(nameof(InventoryGui.OnTabUpgradePressed))]
         private static bool Prefix_EnableRecycleButton(InventoryGui __instance)
         {
+            if (__instance.m_craftTimer >= 0f) __instance.OnCraftCancelPressed();
+
+            RecycleUtil.recycleButton.interactable = true;
+            return true;
+        }
+        
+        
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(InventoryGui.OnTabUpgradePressed))]
+        private static bool PrefixOnTabUpgradePressed(InventoryGui __instance)
+        {
+            if (__instance.m_craftTimer >= 0f) __instance.OnCraftCancelPressed();
+
             RecycleUtil.recycleButton.interactable = true;
             return true;
         }

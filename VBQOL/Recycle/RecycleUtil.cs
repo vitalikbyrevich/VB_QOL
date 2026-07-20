@@ -58,6 +58,7 @@
             recycleButton.onClick.RemoveAllListeners();
             recycleButton.onClick.AddListener(() =>
             {
+                if (InventoryGui.m_instance.m_craftTimer >= 0f) InventoryGui.m_instance.OnCraftCancelPressed();
                 Debug.LogWarning("Selected recycle");
                 recycleButton.interactable = false;
                 InventoryGui.m_instance.m_tabCraft.interactable = true;
@@ -87,11 +88,11 @@
 
         internal static void DoRecycle(Player player, InventoryGui gui)
         {
-            if (gui.m_craftTimer >= 0f)
+         /*   if (gui.m_craftTimer >= 0f)
             {
                 player.Message(MessageHud.MessageType.Center, "Нельзя разобрать во время крафта!");
                 return;
-            }
+            }*/
             
             if (gui.m_craftRecipe is null) return;
 
